@@ -1,0 +1,3 @@
+-- V1__init.sql
+-- Baseline migration for fraud-service
+-- Add your DDL scripts here (e.g., CREATE TABLE statements)
