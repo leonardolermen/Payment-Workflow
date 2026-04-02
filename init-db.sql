@@ -1,0 +1,3 @@
+CREATE DATABASE payflow_db;
+CREATE DATABASE fraud_db;
+
