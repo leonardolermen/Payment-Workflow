@@ -1,9 +1,9 @@
 package com.payflow.coreservice.model;
 
+import com.payflow.coreservice.enums.Enum_User;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

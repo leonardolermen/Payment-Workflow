@@ -1,5 +1,6 @@
 package com.payflow.coreservice.model;
 
+import com.payflow.coreservice.enums.Enum_User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
