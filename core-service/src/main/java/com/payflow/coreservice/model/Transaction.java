@@ -1,5 +1,5 @@
 package com.payflow.coreservice.model;
-import com.payflow.coreservice.Enum_Transaction;
+import com.payflow.coreservice.enums.Enum_Transaction;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
