@@ -8,30 +8,30 @@ Este documento centraliza todas as etapas técnicas de alto a baixo nível exigi
 A fundação do sistema. Começaremos desenhando as tabelas e entidades principais no `core-service` e no `fraud-service`.
 
 ### 1.1 Entidades do `core-service`
-- [ ] **Criar Entidade `User` (Perfil de cliente)**
+- ✅ **Criar Entidade `User` (Perfil de cliente)**
   - Campos: `id` (UUID), `name`, `email` (único), `password` (criptografada), `cpfCnpj` (único), `balance` (Decimal), `status` (ACTIVE, INACTIVE), `createdAt`.
   - Configurar mapeamento `@Table(name = "users")` e restrições.
-- [ ] **Criar Entidade `Payment` (Intenção de Pagamento)**
+- ✅ **Criar Entidade `Payment` (Intenção de Pagamento)**
   - Campos: `id` (UUID), `payerId` (Vínculo c/ User do pagador), `payeeId` (Vínculo c/ User recebedor), `amount` (Decimal), `status` (PENDING, REJECTED, SUCCESS, FAILED), `idempotencyKey` (Unique), `createdAt`.
   - Configurar mapeamento `@Table(name = "payments")`.
-- [ ] **Criar Entidade `Transaction` (Liquidação Efetiva)**
+- ✅ **Criar Entidade `Transaction` (Liquidação Efetiva)**
   - Campos: `id` (UUID), `paymentId` (Vínculo c/ Payment), `status` (SUCCESS, FAILED), `reason` (varchar para logs de falha), `executedAt`.
   - Configurar mapeamento `@Table(name = "transactions")`.
-- [ ] **Criar Script Migration `V1`**
+- ✅ **Criar Script Migration `V1`**
   - Mapear a criação dessas entidades no script Flyway `V1__init.sql` no `core-service`.
 
 ### 1.2 Entidades do `fraud-service`
-- [ ] **Criar Entidade `FraudAnalysisLog`**
+- ✅ **Criar Entidade `FraudAnalysisLog`**
   - Campos: `id` (UUID), `paymentId` (UUID de referência do core), `score` (Decimal/Double), `status` (APPROVED, REJECTED), `reason`, `evaluatedAt`.
   - Configurar mapeamento na Base do Fraud (`@Table(name = "fraud_analysis_logs")`).
-- [ ] **Criar Script Migration `V1` do Fraud**
+- ✅ **Criar Script Migration `V1` do Fraud**
   - Escrever DDL correspondente no arquivo `V1__init.sql` do `fraud-service`.
 
 ---
 
 ## Fase 2: Regras de Banco de Dados e Repository Pattern
-- [ ] Criar `UserRepository`, `PaymentRepository`, e `TransactionRepository` no `core-service` estendendo `JpaRepository`.
-- [ ] Criar `FraudLogRepository` no `fraud-service`.
+- ✅ Criar `UserRepository`, `PaymentRepository`, e `TransactionRepository` no `core-service` estendendo `JpaRepository`.
+- ✅ Criar `FraudLogRepository` no `fraud-service`.
 - [ ] Escrever queries customizadas (ex: Buscar usuário por e-mail, buscar pagamento por Idempotency-key).
 
 ---
@@ -47,7 +47,7 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
   - `UserResponseDTO` - Resposta do usuário (id, name, email, balance, status)
   - `AuthRequestDTO` - Login (email, password)
   - `AuthResponseDTO` - Token JWT + dados do usuário
-- [ ] **Criar DTOs do fraud-service**:
+- ✅ **Criar DTOs do fraud-service**:
   - `FraudAnalysisRequestDTO` - Dados para análise (paymentId, amount, payerId, payeeId)
   - `FraudAnalysisResponseDTO` - Resultado (status, score, reason)
 
@@ -56,7 +56,7 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
   - `PaymentService` - Lógica de criação de pagamentos, validação idempotência, integração com fraud
   - `UserService` - Cadastro, validação de CPF/e-mail únicos, gerenciamento de saldo
   - `AuthService` - Geração/validação JWT, criptografia de senhas (BCrypt)
-- [ ] **Services do fraud-service**:
+- ✅ **Services do fraud-service**:
   - `FraudAnalysisService` - Regras de análise de fraude, cálculo de score, persistência
 
 ### 2.5.3 Controllers (Endpoints REST)
@@ -64,7 +64,7 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
   - `PaymentController` - `POST /payments`, `GET /payments/{id}`, `GET /users/{userId}/payments`
   - `UserController` - `POST /users`, `GET /users/{id}`, `PUT /users/{id}/balance`
   - `AuthController` - `POST /auth/register`, `POST /auth/login`
-- [ ] **Controllers do fraud-service**:
+- ✅ **Controllers do fraud-service**:
   - `FraudController` - `POST /fraud/analyze`, `GET /fraud/analysis/{paymentId}`
 
 ---
