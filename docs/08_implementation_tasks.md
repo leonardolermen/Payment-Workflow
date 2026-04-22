@@ -45,27 +45,27 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
   - `PaymentResponseDTO` - Resposta do pagamento (id, status, createdAt)
   - `UserRequestDTO` - Dados para cadastro (name, email, password, cpfCnpj)
   - `UserResponseDTO` - Resposta do usuário (id, name, email, balance, status)
-  - `AuthRequestDTO` - Login (email, password)
-  - `AuthResponseDTO` - Token JWT + dados do usuário
+- ✅ `AuthRequestDTO` - Login (email, password)
+- ✅ `AuthResponseDTO` - Token JWT + dados do usuário
 - ✅ **Criar DTOs do fraud-service**:
-  - `FraudAnalysisRequestDTO` - Dados para análise (paymentId, amount, payerId, payeeId)
-  - `FraudAnalysisResponseDTO` - Resultado (status, score, reason)
+- ✅ `FraudAnalysisRequestDTO` - Dados para análise (paymentId, amount, payerId, payeeId)
+- ✅ `FraudAnalysisResponseDTO` - Resultado (status, score, reason)
 
 ### 2.5.2 Services (Camada de Negócio)
 - [ ] **Services do core-service**:
   - `PaymentService` - Lógica de criação de pagamentos, validação idempotência, integração com fraud
   - `UserService` - Cadastro, validação de CPF/e-mail únicos, gerenciamento de saldo
-  - `AuthService` - Geração/validação JWT, criptografia de senhas (BCrypt)
+- ✅ `AuthService` - Geração/validação JWT, criptografia de senhas (BCrypt)
 - ✅ **Services do fraud-service**:
-  - `FraudAnalysisService` - Regras de análise de fraude, cálculo de score, persistência
+- ✅ `FraudAnalysisService` - Regras de análise de fraude, cálculo de score, persistência
 
 ### 2.5.3 Controllers (Endpoints REST)
 - [ ] **Controllers do core-service**:
   - `PaymentController` - `POST /payments`, `GET /payments/{id}`, `GET /users/{userId}/payments`
   - `UserController` - `POST /users`, `GET /users/{id}`, `PUT /users/{id}/balance`
-  - `AuthController` - `POST /auth/register`, `POST /auth/login`
+- ✅ `AuthController` - `POST /auth/register`, `POST /auth/login`
 - ✅ **Controllers do fraud-service**:
-  - `FraudController` - `POST /fraud/analyze`, `GET /fraud/analysis/{paymentId}`
+- ✅ `FraudController` - `POST /fraud/analyze`, `GET /fraud/analysis/{paymentId}`
 
 ---
 
