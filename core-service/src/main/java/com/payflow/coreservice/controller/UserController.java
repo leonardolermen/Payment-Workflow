@@ -1,11 +1,15 @@
 package com.payflow.coreservice.controller;
 
-import com.payflow.coreservice.model.User;
+import com.payflow.coreservice.dto.UserRequestDTO;
+import com.payflow.coreservice.dto.UserResponseDTO;
 import com.payflow.coreservice.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
-@RestController //define que essa classe faz requisições https
-@RequestMapping("/users") //define a rota
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -14,28 +18,28 @@ public class UserController {
         this.userService = userService;
     }
 
-    // CREATE
+    // =========================
+    // POST /users
+    // =========================
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
+        return userService.createUser(dto);
     }
 
-    // READ (por id)
+    // =========================
+    // GET /users/{id}
+    // =========================
     @GetMapping("/{id}")
-    public User readUserById(@PathVariable Long id) {
+    public UserResponseDTO getById(@PathVariable UUID id) {
         return userService.readUserById(id);
     }
 
-    // UPDATE
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
-    }
-
-    // DELETE
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deletar(id);
+    // =========================
+    // PUT /users/{id}/balance
+    // =========================
+    @PutMapping("/{id}/balance")
+    public UserResponseDTO updateBalance(@PathVariable UUID id,
+                                         @RequestParam BigDecimal amount) {
+        return userService.updateBalance(id, amount);
     }
 }
-
