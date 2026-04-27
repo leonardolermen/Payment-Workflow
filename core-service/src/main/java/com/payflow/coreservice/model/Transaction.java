@@ -35,6 +35,12 @@ public class Transaction {
     private String reason;
 
     @Column(nullable = false)
+    private UUID payeeId;
+
+    @Column(nullable = false)
+    private UUID payerId;
+
+    @Column(nullable = false)
     private LocalDateTime executedAt;
 
 

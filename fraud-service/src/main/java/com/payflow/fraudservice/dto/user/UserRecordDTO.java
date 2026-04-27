@@ -2,6 +2,7 @@ package com.payflow.fraudservice.dto.user;
 
 import com.payflow.fraudservice.Enums.user.User_Status;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UserRecordDTO(
@@ -11,6 +12,7 @@ public record UserRecordDTO(
         BigDecimal balance,
         User_Status status,
         String document,
-        String documentType
+        String documentType,
+        LocalDateTime createdAt
 ) {
 }
