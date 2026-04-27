@@ -2,7 +2,7 @@ package com.payflow.coreservice.model;
 
 import com.payflow.coreservice.enums.Enum_User;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,11 +10,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private Long id;
 
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid;

@@ -11,6 +11,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    /*
+     * ATENÇÃO: Este controller é para operações administrativas em usuários.
+     * Para registro/login de usuários finais, use AuthController (/auth).
+     * 
+     * AuthController: POST /auth/register (com criptografia + JWT)
+     * UserController: POST /users (administrativo, sem criptografia)
+     */
 
     private final UserService userService;
 
@@ -19,7 +26,7 @@ public class UserController {
     }
 
     // =========================
-    // POST /users
+    // POST /users (apenas uso admin)
     // =========================
     @PostMapping
     public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
