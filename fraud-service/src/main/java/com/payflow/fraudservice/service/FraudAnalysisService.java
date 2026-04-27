@@ -12,6 +12,7 @@ import com.payflow.fraudservice.model.FraudAnalysisLog;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 public class FraudAnalysisService {
@@ -19,6 +20,7 @@ public class FraudAnalysisService {
     private final CoreServiceClient coreServiceClient;
 
     private final FraudLog_Repository fraudLogRepository;
+
 
     public FraudAnalysisService(CoreServiceClient coreServiceClient, FraudLog_Repository fraudLogRepository) {
         this.coreServiceClient = coreServiceClient;
@@ -49,8 +51,6 @@ public class FraudAnalysisService {
     private double calculateRiskScore(PaymentResponseDTO payment, UserRecordDTO payer, UserRecordDTO payee) {
         double score = 0;
 
-        double count_transactions = 0;
-
         if(payment.amount().compareTo(new BigDecimal("15000"))> 0){
             score += 50;
         }
@@ -62,18 +62,36 @@ public class FraudAnalysisService {
         if(payer.status() != User_Status.ACTIVE){
             score += 40;
         }
+
+        if(payee.status() != User_Status.ACTIVE){
+            score += 30;
+        }
+
+        if(payee.createdAt().isAfter(LocalDateTime.now().minusDays(30))){
+            score += 30;
+        }
+
+        int recentPayeeTransactions = coreServiceClient.getRecentTransationCount(payee.id(), "24");
+        if(recentPayeeTransactions > 5){
+            score += 30;
+        }
+
+        int recentPayerTransactions = coreServiceClient.getRecentTransationCount(payer.id(), "1");
+        if(recentPayerTransactions > 5){
+            score += 30;
+        }
         return Math.min(score, 100);
     }
 
     private Status_Fraud determineStatus(double score){
         if(score > 70) return Status_Fraud.REJECTED;
-        if(score > 40) return Status_Fraud.MANUAL_ANALYSIS;
+        if(score >= 30) return Status_Fraud.MANUAL_ANALYSIS;
         return Status_Fraud.APPROVED;
     }
 
     private String determineReason(double score, PaymentResponseDTO payment){
         if(score > 70) return "Alto risco detectado";
-        if(score > 40) return "Análise manual necessária";
+        if(score >= 30) return "Análise manual necessária";
         return "Transação aprovada";
     }
 }
