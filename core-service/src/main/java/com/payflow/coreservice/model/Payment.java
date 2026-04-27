@@ -2,7 +2,10 @@ package com.payflow.coreservice.model;
 
 import com.payflow.coreservice.enums.Enum_Payment;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,6 +14,9 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "payments")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
 
     @Id

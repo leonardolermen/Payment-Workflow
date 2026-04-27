@@ -2,8 +2,10 @@ package com.payflow.coreservice.services;
 
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
+import com.payflow.coreservice.dto.factory.PaymentResponseFactory;
 import com.payflow.coreservice.enums.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
+import com.payflow.coreservice.model.factory.PaymentFactory;
 import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.UserRepository;
@@ -65,16 +67,11 @@ public class PaymentService {
         userRepository.save(payee);
 
         // 6. Criar pagamento
-        Payment payment = new Payment();
-        payment.setPayerId(dto.getPayerId());
-        payment.setPayeeId(dto.getPayeeId());
-        payment.setAmount(dto.getAmount());
-        payment.setStatus(Enum_Payment.SUCCESS);
-        payment.setIdempotencyKey(dto.getIdempotencyKey());
+        Payment payment = PaymentFactory.fromRequest(dto, Enum_Payment.SUCCESS);
 
         Payment saved = paymentRepository.save(payment);
 
-        return toDTO(saved);
+        return PaymentResponseFactory.fromPayment(saved);
     }
 
     // =========================
@@ -103,20 +100,12 @@ public class PaymentService {
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    private PaymentResponseDTO toDTO(Payment payment) {
-        PaymentResponseDTO dto = new PaymentResponseDTO();
-        dto.setId(payment.getId());
-        dto.setStatus(payment.getStatus());
-        dto.setCreatedAt(payment.getCreatedAt());
-        return dto;
-    }
-
     public PaymentResponseDTO getById(Long id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 
-        return toDTO(payment);
+        return PaymentResponseFactory.fromPayment(payment);
     }
 
     public List<PaymentResponseDTO> getByUser(UUID userId) {
@@ -125,7 +114,7 @@ public class PaymentService {
                 paymentRepository.findByPayerIdOrPayeeId(userId, userId);
 
         return payments.stream()
-                .map(this::toDTO)
+                .map(PaymentResponseFactory::fromPayment)
                 .toList();
     }
 }

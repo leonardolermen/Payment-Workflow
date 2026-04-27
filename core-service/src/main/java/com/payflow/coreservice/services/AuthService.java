@@ -6,9 +6,11 @@ import com.payflow.coreservice.exception.DocumentAlreadyExistsException;
 import com.payflow.coreservice.exception.EmailAlreadyExistsException;
 import com.payflow.coreservice.exception.UserNotFoundException;
 import com.payflow.coreservice.model.User;
+import com.payflow.coreservice.model.factory.UserFactory;
 import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.security.JwtService;
 import com.payflow.coreservice.security.UserDetailsServiceImpl;
+import com.payflow.coreservice.dto.factory.AuthResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,29 +58,15 @@ public class AuthService {
             throw new DocumentAlreadyExistsException("Documento já cadastrado");
         }
 
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setDocument(request.getDocument());
-        user.setDocumentType(request.getDocumentType().name());
-        user.setBalance(request.getBalance() != null ? request.getBalance() : BigDecimal.ZERO);
-        user.setStatus(Enum_User.ACTIVE);
-        user.setCreatedAt(LocalDateTime.now());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User user = UserFactory.fromRegisterRequest(request, encodedPassword);
 
         User savedUser = userRepository.save(user);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponseDTO(
-                token,
-                "Bearer",
-                savedUser.getUuid(),
-                savedUser.getName(),
-                savedUser.getEmail(),
-                LocalDateTime.now().plusSeconds(86400)
-        );
+        return AuthResponseFactory.fromUserAndToken(savedUser, token, 86400);
     }
 
     public AuthResponseDTO login(AuthRequestDTO request){
@@ -95,13 +83,6 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtService.generateToken(userDetails);
 
-        return new AuthResponseDTO(
-                token,
-                "Bearer",
-                user.getUuid(),
-                user.getName(),
-                user.getEmail(),
-                LocalDateTime.now().plusSeconds(86400)
-        );
+        return AuthResponseFactory.fromUserAndToken(user, token, 86400);
     }
 }
