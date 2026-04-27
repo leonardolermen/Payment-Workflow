@@ -2,6 +2,8 @@ package com.payflow.coreservice.services;
 
 import com.payflow.coreservice.dto.*;
 import com.payflow.coreservice.enums.Enum_User;
+import com.payflow.coreservice.exception.EmailAlreadyExistsException;
+import com.payflow.coreservice.exception.UserNotFoundException;
 import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.security.JwtService;
@@ -38,7 +40,7 @@ public class AuthService {
 
     public AuthResponseDTO register(RegisterRequestDTO request){
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("Email já cadastrado");
+            throw new EmailAlreadyExistsException("Email já cadastrado");
         }
 
         User user = new User();
@@ -75,7 +77,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtService.generateToken(userDetails);

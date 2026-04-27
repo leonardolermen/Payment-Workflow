@@ -21,3 +21,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
+# JWT Configuration
+jwt:
+  secret: c2VjdXJlX3NlY3JldF9rZXlfZm9yX3BheWZsb3dfYXBwbGljYXRpb25fMjAyNA== # Base64 encoded secret key
+  expiration: 86400000 # 24 hours in milliseconds
+
