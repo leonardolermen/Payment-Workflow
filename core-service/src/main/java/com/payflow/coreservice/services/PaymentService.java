@@ -18,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Data
 @Service
 public class PaymentService {
@@ -94,14 +96,14 @@ public class PaymentService {
         }
     }
 
-    private User findUser(java.util.UUID id) {
-        return userRepository.findById(id)
+    private User findUser(UUID id) {
+        return userRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    public PaymentResponseDTO getById(Long id) {
-        Payment payment = paymentRepository.findById(id)
+    public PaymentResponseDTO getById(UUID id) {
+        Payment payment = paymentRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 

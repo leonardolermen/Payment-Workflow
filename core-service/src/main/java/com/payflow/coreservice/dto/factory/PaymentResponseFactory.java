@@ -9,10 +9,13 @@ public final class PaymentResponseFactory {
     }
 
     public static PaymentResponseDTO fromPayment(Payment payment) {
-        PaymentResponseDTO dto = new PaymentResponseDTO();
-        dto.setId(payment.getId());
-        dto.setStatus(payment.getStatus());
-        dto.setCreatedAt(payment.getCreatedAt());
-        return dto;
+        return PaymentResponseDTO.builder()
+               .id(payment.getUuid())
+                .payerId(payment.getPayerId())
+                .payeeId(payment.getPayeeId())
+                .amount(payment.getAmount())
+                .status(payment.getStatus())
+                .createdAt(payment.getCreatedAt())
+               .build();
     }
 }

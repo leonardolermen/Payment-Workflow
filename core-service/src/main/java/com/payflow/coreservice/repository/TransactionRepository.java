@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface TransactionRepository extends JpaRepository <Transaction, Long >  {
-    Optional<Transaction> findByIdempotencyKey(String idempotencyKey);
+    Optional<Transaction> findByUuid(UUID uuid);
 
     List<Transaction> findByPayerIdAndExecutedAtAfter(UUID payerId, LocalDateTime since);
 

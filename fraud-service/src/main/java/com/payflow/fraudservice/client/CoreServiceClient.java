@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.UUID;
 
-@FeignClient(name = "core-service", url = "http://localhost:8081")
+@FeignClient(name = "core-service", url = "${core-service.url}")
 public interface CoreServiceClient {
     @GetMapping("/payments/{paymentId}")
     PaymentResponseDTO getPaymentById(@PathVariable UUID paymentId);

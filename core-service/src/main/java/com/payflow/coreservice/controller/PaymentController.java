@@ -35,7 +35,7 @@ public class PaymentController {
     // GET /payments/{id}
     // =========================
     @GetMapping("/{id}")
-    public PaymentResponseDTO getById(@PathVariable Long id) {
+    public PaymentResponseDTO getById(@PathVariable UUID id) {
         return paymentService.getById(id);
     }
 

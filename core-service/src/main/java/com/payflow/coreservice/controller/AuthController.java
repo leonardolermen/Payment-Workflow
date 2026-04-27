@@ -27,9 +27,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO request){
         logger.info(
-                "Registering user name={} email={} documentType={} balance={}",
+                "Registering user name={} email={} document={} documentType={} balance={}",
                 request.getName(),
                 request.getEmail(),
+                request.getDocument(),
                 request.getDocumentType(),
                 request.getBalance()
         );
