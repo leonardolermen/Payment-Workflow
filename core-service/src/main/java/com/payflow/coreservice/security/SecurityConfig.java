@@ -1,4 +1,5 @@
 package com.payflow.coreservice.security;
+import com.payflow.coreservice.logging.RequestLoggingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,9 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
+
+    @Autowired
+    private RequestLoggingFilter requestLoggingFilter;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -48,6 +52,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

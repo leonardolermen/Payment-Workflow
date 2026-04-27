@@ -2,6 +2,7 @@ package com.payflow.coreservice.services;
 
 import com.payflow.coreservice.dto.*;
 import com.payflow.coreservice.enums.Enum_User;
+import com.payflow.coreservice.exception.DocumentAlreadyExistsException;
 import com.payflow.coreservice.exception.EmailAlreadyExistsException;
 import com.payflow.coreservice.exception.UserNotFoundException;
 import com.payflow.coreservice.model.User;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
+/**
+ * Service class for authentication-related operations.
+ */
 @Service
 public class AuthService {
 
@@ -38,9 +41,19 @@ public class AuthService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    /**
+     * Registers a new user.
+     *
+     * @param request the registration request
+     * @return the authentication response
+     */
     public AuthResponseDTO register(RegisterRequestDTO request){
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new EmailAlreadyExistsException("Email já cadastrado");
+        }
+
+        if (userRepository.findByDocument(request.getDocument()).isPresent()) {
+            throw new DocumentAlreadyExistsException("Documento já cadastrado");
         }
 
         User user = new User();
