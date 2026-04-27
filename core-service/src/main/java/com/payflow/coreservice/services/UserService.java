@@ -2,6 +2,7 @@ package com.payflow.coreservice.services;
 
 import com.payflow.coreservice.dto.UserRequestDTO;
 import com.payflow.coreservice.dto.UserResponseDTO;
+import com.payflow.coreservice.enums.Enum_User;
 import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -9,10 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 public class UserService {
+    /*
+     * ATENÇÃO: Este serviço é para operações administrativas em usuários.
+     * Para registro/login de usuários finais, use AuthService.
+     * AuthService: Registro com criptografia de senha + geração de JWT
+     * UserService: Operações CRUD administrativas (sem criptografia)
+     */
 
     private final UserRepository userRepository;
 
@@ -20,7 +28,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    //CREATE
+    // CREATE (apenas para uso administrativo - não usa criptografia)
     public UserResponseDTO createUser(UserRequestDTO dto) {
         User user = toEntity(dto);
         User savedUser = userRepository.save(user);
@@ -70,12 +78,16 @@ public class UserService {
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setDocument(dto.getDocument());
+        user.setBalance(BigDecimal.ZERO);
+        user.setStatus(Enum_User.ACTIVE);
+        user.setDocumentType("CPF");
+        user.setCreatedAt(LocalDateTime.now());
         return user;
     }
 
     private UserResponseDTO toResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
+        dto.setId(user.getUuid());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setBalance(user.getBalance());

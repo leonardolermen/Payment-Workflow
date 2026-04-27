@@ -4,6 +4,7 @@ import com.payflow.coreservice.enums.Document_Type;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -30,7 +31,7 @@ public class RegisterRequestDTO {
     @NotBlank(message = "Documento é obrigatório")
     private String document;
 
-    @NotBlank(message = "Tipo do documento é obrigatório")
+    @NotNull(message = "Tipo do documento é obrigatório")
     private Document_Type documentType;
 
     private BigDecimal balance;
