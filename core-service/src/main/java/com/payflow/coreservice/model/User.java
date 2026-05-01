@@ -1,6 +1,6 @@
 package com.payflow.coreservice.model;
 
-import com.payflow.coreservice.enums.Enum_User;
+import com.payflow.commons.enums.user.User_Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,7 +43,7 @@ public class User {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Enum_User status;
+    private User_Status status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

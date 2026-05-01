@@ -1,7 +1,7 @@
 package com.payflow.coreservice.model.factory;
 
 import com.payflow.coreservice.dto.PaymentRequestDTO;
-import com.payflow.coreservice.enums.Enum_Payment;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
 
 import java.util.function.Function;

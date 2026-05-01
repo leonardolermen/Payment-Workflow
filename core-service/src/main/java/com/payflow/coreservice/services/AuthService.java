@@ -1,14 +1,12 @@
 package com.payflow.coreservice.services;
 
 import com.payflow.coreservice.dto.*;
-import com.payflow.coreservice.enums.Enum_User;
 import com.payflow.coreservice.exception.DocumentAlreadyExistsException;
 import com.payflow.coreservice.exception.EmailAlreadyExistsException;
 import com.payflow.coreservice.exception.UserNotFoundException;
 import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.model.factory.UserFactory;
 import com.payflow.coreservice.repository.UserRepository;
-import com.payflow.coreservice.security.JwtService;
 import com.payflow.coreservice.security.UserDetailsServiceImpl;
 import com.payflow.coreservice.dto.factory.AuthResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Service class for authentication-related operations.

@@ -1,11 +1,12 @@
 package com.payflow.coreservice.services;
 
-import com.payflow.coreservice.dto.UserRequestDTO;
-import com.payflow.coreservice.dto.UserResponseDTO;
-import com.payflow.coreservice.enums.Enum_User;
+import com.payflow.commons.dto.user.UserRequest;
+import com.payflow.commons.dto.user.UserResponse;
 import com.payflow.coreservice.model.User;
+import com.payflow.coreservice.model.factory.UserFactory;
 import com.payflow.coreservice.repository.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,41 +24,35 @@ public class UserService {
      */
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-    }
-
-    // CREATE (apenas para uso administrativo - não usa criptografia)
-    public UserResponseDTO createUser(UserRequestDTO dto) {
-        User user = toEntity(dto);
-        User savedUser = userRepository.save(user);
-        return toResponseDTO(savedUser);
+        this.passwordEncoder = passwordEncoder;
     }
 
     // READ (por id)
-    public UserResponseDTO readUserById(UUID id) {
-        User user = userRepository.findById(id)
+    public UserResponse readUserById(UUID id) {
+        User user = userRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        return toResponseDTO(user);
+        return toResponse(user);
     }
 
     // UPDATE
-    public UserResponseDTO updateUser(UUID id, UserRequestDTO dto) {
-        User user = userRepository.findById(id)
+    public UserResponse updateUser(UUID id, UserRequest dto) {
+        User user = userRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setDocument(dto.getDocument());
+        String encodedPassword = passwordEncoder.encode(dto.password());
+
+        user = UserFactory.fromUpdateRequest(user, dto, encodedPassword );
 
         User updatedUser = userRepository.save(user);
 
-        return toResponseDTO(updatedUser);
+        return toResponse(updatedUser);
     }
 
     // DELETE
@@ -67,42 +62,31 @@ public class UserService {
     }
 
     private User findUserEntityById(UUID id) {
-        return userRepository.findById(id)
+        return userRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    private User toEntity(UserRequestDTO dto) {
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setDocument(dto.getDocument());
-        user.setBalance(BigDecimal.ZERO);
-        user.setStatus(Enum_User.ACTIVE);
-        user.setDocumentType("CPF");
-        user.setCreatedAt(LocalDateTime.now());
-        return user;
+    private UserResponse toResponse(User user) {
+        return UserResponse.builder()
+                .id(user.getUuid())
+                .name(user.getName())
+                .email(user.getEmail())
+                .balance(user.getBalance())
+                .status(user.getStatus())
+                .document(user.getDocument())
+                .documentType(user.getDocumentType())
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 
-    private UserResponseDTO toResponseDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getUuid());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setBalance(user.getBalance());
-        dto.setStatus(user.getStatus());
-        return dto;
-    }
-
-    public UserResponseDTO updateBalance(UUID id, BigDecimal amount) {
+    public UserResponse updateBalance(UUID id, BigDecimal amount) {
 
         User user = findUserEntityById(id);
 
         user.setBalance(user.getBalance().add(amount));
 
-        return toResponseDTO(userRepository.save(user));
+        return toResponse(userRepository.save(user));
     }
-
 
 }

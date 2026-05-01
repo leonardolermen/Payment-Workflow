@@ -18,6 +18,7 @@
   <packaging>pom</packaging>
   
   <modules>
+    <module>commons</module>
     <module>api-gateway</module>
     <module>core-service</module>
     <module>fraud-service</module>

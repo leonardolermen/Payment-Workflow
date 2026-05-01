@@ -1,4 +1,4 @@
-package com.payflow.coreservice.security;
+package com.payflow.coreservice.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

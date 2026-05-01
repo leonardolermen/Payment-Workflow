@@ -1,6 +1,6 @@
 package com.payflow.coreservice.model;
 
-import com.payflow.coreservice.enums.Enum_Payment;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

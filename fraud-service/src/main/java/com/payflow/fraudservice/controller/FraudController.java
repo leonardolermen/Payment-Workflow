@@ -1,8 +1,8 @@
 package com.payflow.fraudservice.controller;
 
-import com.payflow.fraudservice.Repository.FraudLog_Repository;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisRequestDTO;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisResponseDTO;
+import com.payflow.fraudservice.Repository.FraudLogRepository;
+import com.payflow.fraudservice.dto.fraud.FraudAnalysisRequest;
+import com.payflow.fraudservice.dto.fraud.FraudAnalysisResponse;
 import com.payflow.fraudservice.model.FraudAnalysisLog;
 import com.payflow.fraudservice.service.FraudAnalysisService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +27,11 @@ public class FraudController {
     @Autowired
     private FraudAnalysisService fraudAnalysisService;
     @Autowired
-    private FraudLog_Repository fraudLog_Repository;
+    private FraudLogRepository fraudLog_Repository;
 
     @PostMapping("/analyze")
-    public ResponseEntity<FraudAnalysisResponseDTO> analyzePayment(
-            @RequestBody FraudAnalysisRequestDTO request){
+    public ResponseEntity<FraudAnalysisResponse> analyzePayment(
+            @RequestBody FraudAnalysisRequest request){
 
         log.info(
                 "fraud.analyze.request traceId={} paymentId={} payerId={} payeeId={}",
@@ -40,13 +40,13 @@ public class FraudController {
                 request.payerId(),
                 request.payeeId()
         );
-        FraudAnalysisResponseDTO response = fraudAnalysisService.analyzePayment(request);
+        FraudAnalysisResponse response = fraudAnalysisService.analyzePayment(request);
         log.info(
                 "fraud.analyze.response traceId={} paymentId={} status={} score={} ",
                 MDC.get("traceId"),
                 request.paymentId(),
-                response.status(),
-                response.score()
+                response.getStatus(),
+                response.getScore()
         );
         return ResponseEntity.ok(response);
     }

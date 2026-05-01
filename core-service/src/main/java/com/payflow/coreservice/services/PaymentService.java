@@ -1,9 +1,13 @@
 package com.payflow.coreservice.services;
 
+import com.payflow.commons.dto.fraud.FraudAnalysisRequest;
+import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
+import com.payflow.commons.dto.payment.PaymentResponse;
+import com.payflow.commons.enums.payment.Enum_Payment;
+import com.payflow.coreservice.client.AntiFraudClient;
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
 import com.payflow.coreservice.dto.factory.PaymentResponseFactory;
-import com.payflow.coreservice.enums.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
 import com.payflow.coreservice.model.factory.PaymentFactory;
 import com.payflow.coreservice.model.User;
@@ -18,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
+import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
+import static java.util.Objects.isNull;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Data
@@ -26,11 +32,17 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final AntiFraudClient antiFraudClient;
+    private final PaymentPersistenceHelper paymentPersistenceHelper;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          AntiFraudClient antiFraudClient,
+                          PaymentPersistenceHelper paymentPersistenceHelper) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.antiFraudClient = antiFraudClient;
+        this.paymentPersistenceHelper = paymentPersistenceHelper;
     }
 
     // =========================
@@ -58,22 +70,31 @@ public class PaymentService {
                     HttpStatus.BAD_REQUEST, "Saldo insuficiente");
         }
 
-        // 4. Fraud (simulado)
-        authorizePayment();
+        Payment payment = PaymentFactory.fromRequest(dto, Enum_Payment.PENDING);
 
-        // 5. Atualizar saldo
-        payer.setBalance(payer.getBalance().subtract(dto.getAmount()));
-        payee.setBalance(payee.getBalance().add(dto.getAmount()));
+        // Persiste em transação separada (REQUIRES_NEW) para que o fraud-service
+        // consiga enxergar o registro quando fizer GET /payments/{id}.
+        payment = paymentPersistenceHelper.saveInNewTx(payment);
+
+        // 4. Fraud (simulado)
+        // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
+        try {
+            authorizePayment(payment);
+        } catch (ResponseStatusException ex) {
+            paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
+            throw ex;
+        }
+
+        payer.setBalance(payer.getBalance().subtract(payment.getAmount()));
+        payee.setBalance(payee.getBalance().add(payment.getAmount()));
 
         userRepository.save(payer);
         userRepository.save(payee);
 
-        // 6. Criar pagamento
-        Payment payment = PaymentFactory.fromRequest(dto, Enum_Payment.SUCCESS);
+        payment.setStatus(Enum_Payment.SUCCESS);
+        paymentRepository.save(payment);
 
-        Payment saved = paymentRepository.save(payment);
-
-        return PaymentResponseFactory.fromPayment(saved);
+        return PaymentResponseFactory.fromPayment(payment);
     }
 
     // =========================
@@ -87,10 +108,19 @@ public class PaymentService {
         }
     }
 
-    private void authorizePayment() {
-        boolean autorizado = true; // simulação
+    private void authorizePayment(Payment payment) {
 
-        if (!autorizado) {
+        FraudAnalysisRequest analysisRequest = FraudAnalysisRequest.builder()
+                .paymentId(payment.getUuid())
+                .payerId(payment.getPayerId())
+                .payeeId(payment.getPayeeId())
+                .amount(payment.getAmount())
+                .build();
+
+        FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(analysisRequest).getBody();
+
+        assert analysisResponse != null;
+        if (analysisResponse.getStatus().equals(REJECTED)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Pagamento não autorizado");
         }
@@ -102,7 +132,7 @@ public class PaymentService {
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 
-    public PaymentResponseDTO getById(UUID id) {
+    public PaymentResponse getById(UUID id) {
         Payment payment = paymentRepository.findByUuid(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));

@@ -1,7 +1,7 @@
 package com.payflow.coreservice.controller;
 
-import com.payflow.coreservice.dto.UserRequestDTO;
-import com.payflow.coreservice.dto.UserResponseDTO;
+import com.payflow.commons.dto.user.UserRequest;
+import com.payflow.commons.dto.user.UserResponse;
 import com.payflow.coreservice.services.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +26,10 @@ public class UserController {
     }
 
     // =========================
-    // POST /users (apenas uso admin)
-    // =========================
-    @PostMapping
-    public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
-        return userService.createUser(dto);
-    }
-
-    // =========================
     // GET /users/{id}
     // =========================
     @GetMapping("/{id}")
-    public UserResponseDTO getById(@PathVariable UUID id) {
+    public UserResponse getById(@PathVariable UUID id) {
         return userService.readUserById(id);
     }
 
@@ -45,8 +37,8 @@ public class UserController {
     // PUT /users/{id}/balance
     // =========================
     @PutMapping("/{id}/balance")
-    public UserResponseDTO updateBalance(@PathVariable UUID id,
-                                         @RequestParam BigDecimal amount) {
+    public UserResponse updateBalance(@PathVariable UUID id,
+                                      @RequestParam BigDecimal amount) {
         return userService.updateBalance(id, amount);
     }
 }

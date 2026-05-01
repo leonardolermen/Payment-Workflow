@@ -10,12 +10,14 @@
         <module name="api-gateway" />
         <module name="fraud-service" />
         <module name="core-service" />
+        <module name="commons" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="commons" options="-parameters" />
       <module name="core-service" options="-parameters" />
       <module name="fraud-service" options="-parameters" />
     </option>

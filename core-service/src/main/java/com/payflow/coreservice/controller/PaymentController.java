@@ -1,5 +1,6 @@
 package com.payflow.coreservice.controller;
 
+import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
 import com.payflow.coreservice.services.PaymentService;
@@ -35,7 +36,7 @@ public class PaymentController {
     // GET /payments/{id}
     // =========================
     @GetMapping("/{id}")
-    public PaymentResponseDTO getById(@PathVariable UUID id) {
+    public PaymentResponse getById(@PathVariable UUID id) {
         return paymentService.getById(id);
     }
 

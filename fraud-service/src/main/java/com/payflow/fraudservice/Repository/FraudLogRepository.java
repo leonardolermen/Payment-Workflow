@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface FraudLog_Repository extends JpaRepository<FraudAnalysisLog, Long> {
+public interface FraudLogRepository extends JpaRepository<FraudAnalysisLog, Long> {
 
     List<FraudAnalysisLog> findByPaymentId(UUID paymentId);
 

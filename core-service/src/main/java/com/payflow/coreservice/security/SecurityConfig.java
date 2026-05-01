@@ -24,6 +24,9 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthFilter;
 
     @Autowired
+    private InternalApiKeyFilter internalApiKeyFilter;
+
+    @Autowired
     private RequestLoggingFilter requestLoggingFilter;
 
     @Autowired
@@ -53,6 +56,7 @@ public class SecurityConfig {
                         SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(requestLoggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(internalApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -1,7 +1,8 @@
 package com.payflow.coreservice.model.factory;
 
+import com.payflow.commons.dto.user.UserRequest;
+import com.payflow.commons.enums.user.User_Status;
 import com.payflow.coreservice.dto.RegisterRequestDTO;
-import com.payflow.coreservice.enums.Enum_User;
 import com.payflow.coreservice.model.User;
 
 import java.math.BigDecimal;
@@ -25,7 +26,7 @@ public final class UserFactory {
                 .document(request.getDocument())
                 .documentType(request.getDocumentType().name())
                 .balance(request.getBalance() != null ? request.getBalance() : BigDecimal.ZERO)
-                .status(Enum_User.ACTIVE)
+                .status(User_Status.ACTIVE)
                 .createdAt(LocalDateTime.now());
 
         if (customizer != null) {
@@ -37,5 +38,15 @@ public final class UserFactory {
 
     public static User fromRegisterRequest(RegisterRequestDTO request, String encodedPassword) {
         return fromRegisterRequest(request, encodedPassword, null);
+    }
+
+    public static User fromUpdateRequest(User user, UserRequest request, String encodedPassword) {
+        User.UserBuilder builder = User.builder()
+                .name(request.name() != null? request.name(): user.getName())
+                .email(request.email() != null? request.email(): user.getEmail())
+                .password(encodedPassword != null? encodedPassword: user.getPassword())
+                .document(request.document() != null? request.document(): user.getDocument())
+                .status(User_Status.ACTIVE);
+        return builder.build();
     }
 }
