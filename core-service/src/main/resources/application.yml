@@ -26,3 +26,6 @@ jwt:
   secret: c2VjdXJlX3NlY3JldF9rZXlfZm9yX3BheWZsb3dfYXBwbGljYXRpb25fMjAyNA== # Base64 encoded secret key
   expiration: 86400000 # 24 hours in milliseconds
 
+core-service:
+  url: http://localhost:8081
+

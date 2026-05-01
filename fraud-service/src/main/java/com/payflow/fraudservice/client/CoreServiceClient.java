@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import java.util.UUID;
 
-@FeignClient(name = "core-service", url = "http://localhost:8081")
+@FeignClient(name = "core-service", url = "${core-service.url}")
 public interface CoreServiceClient {
     @GetMapping("/payments/{paymentId}")
     PaymentResponseDTO getPaymentById(@PathVariable UUID paymentId);
@@ -22,4 +22,7 @@ public interface CoreServiceClient {
 
     @PostMapping("/auth/login")
     AuthResponseDTO authenticate(@RequestBody AuthRequestDTO authRequest);
+
+    @GetMapping("/users/{userId}/recent-transactions")
+    Integer getRecentTransationCount(@PathVariable UUID userId, @RequestParam String period);
 }

@@ -11,7 +11,18 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/core/**
+          filters:
+            - StripPrefix=1
         - id: fraud-service
           uri: http://localhost:8082
           predicates:
             - Path=/api/fraud/**
+          filters:
+            - StripPrefix=1
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
+            allowedHeaders: "*"
+            allowCredentials: true
