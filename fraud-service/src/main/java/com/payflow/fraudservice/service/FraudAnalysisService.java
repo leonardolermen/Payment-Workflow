@@ -43,6 +43,7 @@ public class FraudAnalysisService {
         log.setScore(score);
         log.setStatus(status);
         log.setReason(reason);
+        log.setEvaluatedAt(LocalDateTime.now());
         fraudLogRepository.save(log);
 
         return FraudAnalysisResponse.builder()
@@ -75,15 +76,15 @@ public class FraudAnalysisService {
             score += 30;
         }
 
-        int recentPayeeTransactions = coreServiceClient.getRecentTransationCount(payee.getId(), "24");
-        if(recentPayeeTransactions > 5){
-            score += 30;
-        }
-
-        int recentPayerTransactions = coreServiceClient.getRecentTransationCount(payer.getId(), "1");
-        if(recentPayerTransactions > 5){
-            score += 30;
-        }
+//        int recentPayeeTransactions = coreServiceClient.getRecentTransationCount(payee.getId(), "24");
+//        if(recentPayeeTransactions > 5){
+//            score += 30;
+//        }
+//
+//        int recentPayerTransactions = coreServiceClient.getRecentTransationCount(payer.getId(), "1");
+//        if(recentPayerTransactions > 5){
+//            score += 30;
+//        }
         return Math.min(score, 100);
     }
 
