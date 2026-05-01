@@ -1,6 +1,6 @@
 package com.payflow.coreservice.model.factory;
 
-import com.payflow.coreservice.dto.PaymentRequestDTO;
+import com.payflow.commons.dto.payment.PaymentRequest;
 import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
 
@@ -12,7 +12,7 @@ public final class PaymentFactory {
     }
 
     public static Payment fromRequest(
-            PaymentRequestDTO request,
+            PaymentRequest request,
             Enum_Payment status,
             Function<Payment.PaymentBuilder, Payment.PaymentBuilder> customizer
     ) {
@@ -30,7 +30,7 @@ public final class PaymentFactory {
         return builder.build();
     }
 
-    public static Payment fromRequest(PaymentRequestDTO request, Enum_Payment status) {
+    public static Payment fromRequest(PaymentRequest request, Enum_Payment status) {
         return fromRequest(request, status, null);
     }
 }

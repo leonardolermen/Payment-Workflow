@@ -1,5 +1,6 @@
 package com.payflow.coreservice.controller;
 
+import com.payflow.commons.dto.payment.PaymentRequest;
 import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
@@ -27,9 +28,9 @@ public class PaymentController {
     // POST /payments
     // =========================
     @PostMapping
-    public PaymentResponseDTO create(@RequestBody PaymentRequestDTO dto) {
-        logger.info("Creating payment payload={}", dto);
-        return paymentService.createPayment(dto);
+    public PaymentResponse create(@RequestBody PaymentRequest request) {
+        logger.info("Creating payment payload={}", request);
+        return paymentService.createPayment(request);
     }
 
     // =========================
@@ -44,7 +45,7 @@ public class PaymentController {
     // GET /users/{userId}/payments
     // =========================
     @GetMapping("/users/{userId}")
-    public List<PaymentResponseDTO> getByUser(@PathVariable UUID userId) {
+    public List<PaymentResponse> getByUser(@PathVariable UUID userId) {
         return paymentService.getByUser(userId);
     }
 }

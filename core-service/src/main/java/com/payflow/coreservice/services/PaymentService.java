@@ -2,6 +2,7 @@ package com.payflow.coreservice.services;
 
 import com.payflow.commons.dto.fraud.FraudAnalysisRequest;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
+import com.payflow.commons.dto.payment.PaymentRequest;
 import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.client.AntiFraudClient;
@@ -50,31 +51,32 @@ public class PaymentService {
     // =========================
 
     @Transactional
-    public PaymentResponseDTO createPayment(PaymentRequestDTO dto) {
+    public PaymentResponse createPayment(PaymentRequest request) {
 
         // 1. Idempotência
-        validateIdempotency(dto.getIdempotencyKey());
+        validateIdempotency(request.getIdempotencyKey());
 
         // 2. Buscar usuários
-        User payer = findUser(dto.getPayerId());
-        User payee = findUser(dto.getPayeeId());
+        User payer = findUser(request.getPayerId());
+        User payee = findUser(request.getPayeeId());
 
         // 3. Regras de negócio
-        if (dto.getPayerId().equals(dto.getPayeeId())) {
+        if (request.getPayerId().equals(request.getPayeeId())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Transferência inválida");
         }
 
-        if (payer.getBalance().compareTo(dto.getAmount()) < 0) {
+        if (payer.getBalance().compareTo(request.getAmount()) < 0) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Saldo insuficiente");
         }
 
-        Payment payment = PaymentFactory.fromRequest(dto, Enum_Payment.PENDING);
+        Payment payment = PaymentFactory.fromRequest(request, Enum_Payment.PENDING);
 
         // Persiste em transação separada (REQUIRES_NEW) para que o fraud-service
         // consiga enxergar o registro quando fizer GET /payments/{id}.
         payment = paymentPersistenceHelper.saveInNewTx(payment);
+
 
         // 4. Fraud (simulado)
         // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
@@ -140,7 +142,7 @@ public class PaymentService {
         return PaymentResponseFactory.fromPayment(payment);
     }
 
-    public List<PaymentResponseDTO> getByUser(UUID userId) {
+    public List<PaymentResponse> getByUser(UUID userId) {
 
         List<Payment> payments =
                 paymentRepository.findByPayerIdOrPayeeId(userId, userId);

@@ -1,6 +1,6 @@
 package com.payflow.coreservice.services;
 
-import com.payflow.coreservice.enums.Enum_Payment;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
 import com.payflow.coreservice.repository.PaymentRepository;
 import org.springframework.stereotype.Component;
