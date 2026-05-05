@@ -5,6 +5,7 @@ import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
 import com.payflow.coreservice.strategy.handlers.ApprovedHandler;
+import com.payflow.coreservice.strategy.handlers.PendingReviewHandler;
 import com.payflow.coreservice.strategy.handlers.RejectedHandler;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +18,13 @@ public class PaymentStatusHandlerFactory {
 
     public PaymentStatusHandlerFactory(
             ApprovedHandler approvedHandler,
-            RejectedHandler rejectedHandler){
+            RejectedHandler rejectedHandler,
+            PendingReviewHandler pendingReviewHandler){
 
         this.handlers = Map.of(
                 Status_Fraud.APPROVED, approvedHandler,
-                Status_Fraud.REJECTED, rejectedHandler
+                Status_Fraud.REJECTED, rejectedHandler,
+                Status_Fraud.PENDING_REVIEW, pendingReviewHandler
         );
     }
 
