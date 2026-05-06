@@ -56,8 +56,8 @@ public class FraudAnalysisService {
     private double calculateRiskScore(PaymentResponse payment, UserResponse payer, UserResponse payee) {
         double score = 0;
 
-        if(payment.getAmount().compareTo(new BigDecimal("15000"))> 0){
-            score += 50;
+        if(payment.getAmount().compareTo(new BigDecimal("40000"))> 0){
+            score += 30;
         }
 
         if(payer.getBalance().compareTo(payment.getAmount())< 0){
@@ -72,8 +72,8 @@ public class FraudAnalysisService {
             score += 30;
         }
 
-        if(payee.getCreatedAt().isAfter(LocalDateTime.now().minusDays(30))){
-            score += 30;
+        if(payee.getCreatedAt().isAfter(LocalDateTime.now().minusDays(7)) && payment.getAmount().compareTo(new BigDecimal("35000"))> 0){
+            score += 70;
         }
 
 //        int recentPayeeTransactions = coreServiceClient.getRecentTransationCount(payee.getId(), "24");
@@ -89,7 +89,7 @@ public class FraudAnalysisService {
     }
 
     private Status_Fraud determineStatus(double score){
-        if(score > 70) return Status_Fraud.REJECTED;
+        if(score >= 70) return Status_Fraud.REJECTED;
         if(score >= 30) return Status_Fraud.MANUAL_ANALYSIS;
         return Status_Fraud.APPROVED;
     }

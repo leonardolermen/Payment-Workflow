@@ -30,7 +30,7 @@ public class ManualReviewController {
         return ResponseEntity.ok(manualReviewService.getPaymentDetails(paymentId));
     }
 
-    @PostMapping("/decision")
+    @PostMapping("/payment/{paymentId}")
     public ResponseEntity<?> makeDecision(@RequestBody ManualReviewDecision decision){
         manualReviewService.processDecision(decision);
         return ResponseEntity.ok().build();

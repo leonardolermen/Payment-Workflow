@@ -25,7 +25,7 @@ public class RejectedHandler implements PaymentStatusHandler {
         payment.setStatus(Enum_Payment.FAILED);
         paymentRepository.save(payment);
 
-        logger.warn("Pagamento rejeitado pelo anti-fraude: " +
+        logger.info("Pagamento rejeitado pelo anti-fraude: " +
                         "UUID: {}, Payer: {}, Payee: {}, Amount: {}, Status: {}",
                 payment.getUuid(),
                 payment.getPayerId(),

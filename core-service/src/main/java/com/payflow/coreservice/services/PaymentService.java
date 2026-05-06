@@ -19,6 +19,8 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import com.payflow.coreservice.strategy.PaymentStatusHandler;
+import com.payflow.coreservice.strategy.factory.PaymentStatusHandlerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,15 +37,18 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final AntiFraudClient antiFraudClient;
     private final PaymentPersistenceHelper paymentPersistenceHelper;
+    private final PaymentStatusHandlerFactory handlerFactory;
 
     public PaymentService(PaymentRepository paymentRepository,
                           UserRepository userRepository,
                           AntiFraudClient antiFraudClient,
-                          PaymentPersistenceHelper paymentPersistenceHelper) {
+                          PaymentPersistenceHelper paymentPersistenceHelper,
+                          PaymentStatusHandlerFactory handlerFactory) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.antiFraudClient = antiFraudClient;
         this.paymentPersistenceHelper = paymentPersistenceHelper;
+        this.handlerFactory = handlerFactory;
     }
 
     // =========================
@@ -81,20 +86,27 @@ public class PaymentService {
         // 4. Fraud (simulado)
         // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
         try {
-            authorizePayment(payment);
+            FraudAnalysisRequest analysisRequest = FraudAnalysisRequest.builder()
+                    .paymentId(payment.getUuid())
+                    .payerId(payment.getPayerId())
+                    .payeeId(payment.getPayeeId())
+                    .amount(payment.getAmount())
+                    .build();
+
+            FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(analysisRequest).getBody();
+
+            if (analysisResponse == null){
+                throw new RuntimeException("Resposta do serviço de fraude nula");
+            }
+
+            PaymentStatusHandler handler = handlerFactory.getHandler(analysisResponse.getStatus());
+            handler.handle(payment, analysisResponse);
+
+
         } catch (ResponseStatusException ex) {
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
             throw ex;
         }
-
-        payer.setBalance(payer.getBalance().subtract(payment.getAmount()));
-        payee.setBalance(payee.getBalance().add(payment.getAmount()));
-
-        userRepository.save(payer);
-        userRepository.save(payee);
-
-        payment.setStatus(Enum_Payment.SUCCESS);
-        paymentRepository.save(payment);
 
         return PaymentResponseFactory.fromPayment(payment);
     }

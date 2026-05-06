@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class PendingReviewHandler implements PaymentStatusHandler {
+public class SuspiciousHandler implements PaymentStatusHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(PendingReviewHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(SuspiciousHandler.class);
 
     private final PaymentRepository paymentRepository;
     private final KafkaTemplate<String, PaymentAlertEvent> kafkaTemplate;
@@ -28,7 +28,7 @@ public class PendingReviewHandler implements PaymentStatusHandler {
 
     @Override
     @Transactional
-    public void handle(Payment payment, FraudAnalysisResponse response){
+    public void handle(Payment payment, FraudAnalysisResponse response) {
         payment.setStatus(Enum_Payment.PENDING);
         paymentRepository.save(payment);
 
@@ -37,14 +37,13 @@ public class PendingReviewHandler implements PaymentStatusHandler {
                 .payerId(payment.getPayerId())
                 .payeeId(payment.getPayeeId())
                 .amount(payment.getAmount())
-                .alertType("PENDING_REVIEW")
-                .reason("Pagamento requer análise manual")
+                .alertType("SUSPICIOUS")
+                .reason("Atividade suspeita detectada - requer investigação")
                 .timestamp(LocalDateTime.now())
                 .build();
 
         kafkaTemplate.send(ALERT_TOPIC, payment.getUuid().toString(), alertEvent);
 
-        logger.info("🚨 Pagamento em análise manual: {} | Alerta enviado via Kafka", payment.getUuid());
-
+        logger.info("🚨 Atividade suspeita detectada: {} | Alerta crítico enviado via Kafka", payment.getUuid());
     }
 }

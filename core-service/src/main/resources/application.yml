@@ -22,6 +22,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.payflow.commons.dto
+        spring.json.use.type.headers: false
 
 # JWT Configuration
 jwt:
