@@ -14,37 +14,39 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-
 @Component
 @RequiredArgsConstructor
-public class PendingReviewHandler implements PaymentStatusHandler {
+public class ManualAnalysisHandler implements PaymentStatusHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(PendingReviewHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ManualAnalysisHandler.class);
 
     private final PaymentRepository paymentRepository;
+
     private final KafkaTemplate<String, PaymentAlertEvent> kafkaTemplate;
 
     private static final String ALERT_TOPIC = "payflow.payment.alerts";
 
     @Override
     @Transactional
-    public void handle(Payment payment, FraudAnalysisResponse response){
+    public void handle(Payment payment, FraudAnalysisResponse response) {
         payment.setStatus(Enum_Payment.PENDING);
         paymentRepository.save(payment);
+
 
         PaymentAlertEvent alertEvent = PaymentAlertEvent.builder()
                 .paymentId(payment.getUuid())
                 .payerId(payment.getPayerId())
                 .payeeId(payment.getPayeeId())
                 .amount(payment.getAmount())
-                .alertType("PENDING_REVIEW")
-                .reason("Pagamento requer análise manual")
+                .alertType("MANUAL_ANALYSIS")
+                .reason("Pagamento requer análise manual detalhada")
                 .timestamp(LocalDateTime.now())
                 .build();
 
+
         kafkaTemplate.send(ALERT_TOPIC, payment.getUuid().toString(), alertEvent);
 
-        logger.info("🚨 Pagamento em análise manual: {} | Alerta enviado via Kafka", payment.getUuid());
-
+        logger.info("🔍 Pagamento em análise manual detalhada: {} | Alerta enviado via Kafka", payment.getUuid());
     }
+
 }
