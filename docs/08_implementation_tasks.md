@@ -32,7 +32,9 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
 ## Fase 2: Regras de Banco de Dados e Repository Pattern
 - ✅ Criar `UserRepository`, `PaymentRepository`, e `TransactionRepository` no `core-service` estendendo `JpaRepository`.
 - ✅ Criar `FraudLogRepository` no `fraud-service`.
-- [ ] Escrever queries customizadas (ex: Buscar usuário por e-mail, buscar pagamento por Idempotency-key).
+- ✅ Escrever queries customizadas (ex: Buscar usuário por e-mail, buscar pagamento por Idempotency-key).
+  - `findByEmail`, `findByDocument`, `findByUuid` no `UserRepository`
+  - `findByIdempotencyKey`, `findByPayerIdOrPayeeId`, `findByUuid` no `PaymentRepository`
 
 ---
 
@@ -40,11 +42,9 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
 **Componentes essenciais que expõem a API e contêm a lógica de negócio**
 
 ### 2.5.1 DTOs (Data Transfer Objects)
-- [ ] **Criar DTOs do core-service**:
-  - `PaymentRequestDTO` - Dados para criar pagamento (payerId, payeeId, amount)
-  - `PaymentResponseDTO` - Resposta do pagamento (id, status, createdAt)
-  - `UserRequestDTO` - Dados para cadastro (name, email, password, cpfCnpj)
-  - `UserResponseDTO` - Resposta do usuário (id, name, email, balance, status)
+- ✅ **Criar DTOs do core-service**:
+  - `PaymentRequestDTO` / `PaymentResponseDTO` no `core-service`
+  - `UserRequest` / `UserResponse` no módulo `commons` (compartilhados entre serviços)
 - ✅ `AuthRequestDTO` - Login (email, password)
 - ✅ `AuthResponseDTO` - Token JWT + dados do usuário
 - ✅ **Criar DTOs do fraud-service**:
@@ -52,17 +52,18 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
 - ✅ `FraudAnalysisResponseDTO` - Resultado (status, score, reason)
 
 ### 2.5.2 Services (Camada de Negócio)
-- [ ] **Services do core-service**:
-  - `PaymentService` - Lógica de criação de pagamentos, validação idempotência, integração com fraud
-  - `UserService` - Cadastro, validação de CPF/e-mail únicos, gerenciamento de saldo
+- ✅ **Services do core-service**:
+  - `PaymentService` - Idempotência via DB, validação de saldo, integração síncrona com fraud, débito/crédito
+  - `UserService` - CRUD administrativo (read, update, delete, updateBalance)
 - ✅ `AuthService` - Geração/validação JWT, criptografia de senhas (BCrypt)
 - ✅ **Services do fraud-service**:
 - ✅ `FraudAnalysisService` - Regras de análise de fraude, cálculo de score, persistência
 
 ### 2.5.3 Controllers (Endpoints REST)
-- [ ] **Controllers do core-service**:
-  - `PaymentController` - `POST /payments`, `GET /payments/{id}`, `GET /users/{userId}/payments`
-  - `UserController` - `POST /users`, `GET /users/{id}`, `PUT /users/{id}/balance`
+- ✅ **Controllers do core-service**:
+  - `PaymentController` - `POST /payments`, `GET /payments/{id}`, `GET /payments/users/{userId}`
+  - `UserController` - `GET /users/{id}`, `PUT /users/{id}`, `DELETE /users/{id}`, `PUT /users/{id}/balance`
+  - `UserPeriodController` - endpoint auxiliar de usuários por período
 - ✅ `AuthController` - `POST /auth/register`, `POST /auth/login`
 - ✅ **Controllers do fraud-service**:
 - ✅ `FraudController` - `POST /fraud/analyze`, `GET /fraud/analysis/{paymentId}`
@@ -70,32 +71,32 @@ A fundação do sistema. Começaremos desenhando as tabelas e entidades principa
 ---
 
 ## Fase 3: Segurança, Gateway e Autenticação
-- [ ] **Configurar API Gateway (`api-gateway`)**:
-  - Definir rotas YAML no `application.yml` apontando `/core/**` para `localhost:8081` e `/fraud/**` para `localhost:8082`.
-  - Aplicar políticas simples de CORS.
-- [ ] **Módulo de Autenticação (`core-service` ou microserviço extra)**:
-  - Add Spring Security e Biblioteca Jwt (ex: `jjwt`).
-  - Implementar o filtro `JwtAuthenticationFilter` para validar tokens nos Headers das requests REST.
-  - Implementar os endpoints `POST /auth/register` (Cria usuário encriptando senha c/ BCrypt) e `POST /auth/login` (Gera token JWT e devolve ao cliente).
+- ✅ **Configurar API Gateway (`api-gateway`)**:
+  - Rotas `/api/core/**` → `localhost:8081` e `/api/fraud/**` → `localhost:8082` definidas no `application.yml`.
+  - CORS global configurado via `globalcors`.
+- ✅ **Módulo de Autenticação (`core-service`)**:
+  - `spring-boot-starter-security` + `jjwt` adicionados.
+  - `JwtAuthenticationFilter` + `InternalApiKeyFilter` + `SecurityConfig` implementados.
+  - `POST /auth/register` e `POST /auth/login` funcionais.
 
 ---
 
 ## Fase 4: O Coração do Pagamento (Payment API síncrona)
-- [ ] **Configurar Redis**: Adicionar dependência do `spring-boot-starter-data-redis` no `core-service`.
-- [ ] **Implementar Endpoint `POST /payments` (`core-service`)**:
-  - Extrair o Header `Idempotency-Key` e validar no cache temporal (TTL de 24h). Devolver pagamento retido se a chave já existir.
-  - Criar registro na tabela `payments` com status PENDING.
-- [ ] **Integração Feign / REST c/ Fraud Service**:
-  - Criar `FraudClient` (via `@FeignClient` ou `RestClient`) no `core-service`.
-  - Implementar API no `fraud-service` (`POST /fraud/analyze` recebendo DTO do pagamento).
-  - Configurar regras lógicas no `fraud-service` (ex: recusa se valor for maior que 10.000). Salva análise na tabela. Retorna Status (APPROVED / REJECTED) pro core.
-- [ ] **Atualização Conforme Antifraude**:
-  - Se Fraud Service == REJECTED, atualizar Payment pra REJECTED e retornar `400`.
-  - Se Fraud Service == APPROVED, o fluxo continua (commit no banco como PENDING).
+- ⚠️ **Configurar Redis**: dependência `spring-boot-starter-data-redis` **ainda não adicionada**.
+  - *Divergência*: idempotência foi implementada via consulta ao banco (`findByIdempotencyKey`) em vez de cache Redis com TTL. Funcional, mas sem expiração automática de 24h.
+- ✅ **Implementar Endpoint `POST /payments` (`core-service`)**:
+  - Idempotência via DB (`findByIdempotencyKey`), validação de saldo, registro em `payments`.
+- ✅ **Integração Feign / REST c/ Fraud Service**:
+  - `AntiFraudClient` via `@FeignClient` implementado no `core-service`.
+  - `POST /fraud/analyze` funcional no `fraud-service` com regras e persistência.
+- ✅ **Atualização Conforme Antifraude**:
+  - REJECTED → `payment.status = FAILED` + `400`.
+  - APPROVED → débito/crédito síncrono + `payment.status = SUCCESS`.
 
 ---
 
 ## Fase 5: Mensageria (Event-Driven Flow c/ Kafka)
+> ⚠️ Dependência `spring-kafka` já adicionada no `pom.xml`, mas nenhuma classe de Producer/Consumer criada ainda.
 - [ ] **Producers**: 
   - Configurar classe produtora no `core-service` para postar no tópico `payment-created-topic` após aprovar no antifraude.
 - [ ] **Configurar Tópicos**:
