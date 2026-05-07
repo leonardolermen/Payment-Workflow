@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.payflow.coreservice.enums.Enum_Payment;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

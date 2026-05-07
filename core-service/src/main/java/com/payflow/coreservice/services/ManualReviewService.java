@@ -4,7 +4,7 @@ import com.payflow.commons.dto.alert.ManualReviewDecision;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.coreservice.dto.factory.PaymentDetailsDTO;
-import com.payflow.coreservice.enums.Enum_Payment;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.model.Payment;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
