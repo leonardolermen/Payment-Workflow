@@ -5,6 +5,7 @@ import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.dto.payment.PaymentRequest;
 import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
+import com.payflow.coreservice.builder.AnalysisRequestBuilder;
 import com.payflow.coreservice.client.AntiFraudClient;
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
@@ -124,14 +125,7 @@ public class PaymentService {
 
     private void authorizePayment(Payment payment) {
 
-        FraudAnalysisRequest analysisRequest = FraudAnalysisRequest.builder()
-                .paymentId(payment.getUuid())
-                .payerId(payment.getPayerId())
-                .payeeId(payment.getPayeeId())
-                .amount(payment.getAmount())
-                .build();
-
-        FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(analysisRequest).getBody();
+        FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(AnalysisRequestBuilder.fromAnalysisRequest(payment)).getBody();
 
         assert analysisResponse != null;
         if (analysisResponse.getStatus().equals(REJECTED)) {

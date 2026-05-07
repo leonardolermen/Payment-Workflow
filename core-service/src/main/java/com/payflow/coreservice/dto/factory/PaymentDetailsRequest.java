@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 @Data
 @Builder
-public class PaymentDetailsDTO {
+public class PaymentDetailsRequest {
     private UUID paymentId;
     private UUID payerId;
     private UUID payeeId;
