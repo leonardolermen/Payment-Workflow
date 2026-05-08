@@ -28,9 +28,10 @@ public class PaymentController {
     // POST /payments
     // =========================
     @PostMapping
-    public PaymentResponse create(@RequestBody PaymentRequest request) {
-        logger.info("Creating payment payload={}", request);
-        return paymentService.createPayment(request);
+    public PaymentResponse create(@RequestHeader("idempotency-key") String idempotencyKey,
+                                  @RequestBody PaymentRequest request) {
+        logger.info("Creating payment idempotencyKey={} payload={}",idempotencyKey, request);
+        return paymentService.createPayment(idempotencyKey, request);
     }
 
     // =========================
