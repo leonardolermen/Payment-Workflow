@@ -31,15 +31,11 @@ public class ManualReviewController {
     }
 
     @PostMapping("/payment/{paymentId}")
-    public ResponseEntity<?> makeDecision(@RequestBody ManualReviewDecision decision){
-        manualReviewService.processDecision(decision);
+    public ResponseEntity<?> makeDecision(@PathVariable UUID paymentId, @RequestBody ManualReviewDecision decision){
+
+        decision.setPaymentId(paymentId);
+        manualReviewService.processDecision(decision, paymentId);
         return ResponseEntity.ok().build();
     }
-/*
-    @GetMapping("/history")
-    public ResponseEntity<?> getDecisionHistory(){
-        return ResponseEntity.ok(manualReviewService.getDecisionHistory());
-    }
 
- */
 }

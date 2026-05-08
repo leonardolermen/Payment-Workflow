@@ -3,6 +3,7 @@ package com.payflow.coreservice.strategy.handlers;
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
+import com.payflow.coreservice.builder.PaymentAlertEventBuilder;
 import com.payflow.coreservice.model.Payment;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
@@ -32,15 +33,7 @@ public class PendingReviewHandler implements PaymentStatusHandler {
         payment.setStatus(Enum_Payment.PENDING);
         paymentRepository.save(payment);
 
-        PaymentAlertEvent alertEvent = PaymentAlertEvent.builder()
-                .paymentId(payment.getUuid())
-                .payerId(payment.getPayerId())
-                .payeeId(payment.getPayeeId())
-                .amount(payment.getAmount())
-                .alertType("PENDING_REVIEW")
-                .reason("Pagamento requer análise manual")
-                .timestamp(LocalDateTime.now())
-                .build();
+        PaymentAlertEvent alertEvent = PaymentAlertEventBuilder.fromAlertEvento(payment, response);
 
         kafkaTemplate.send(ALERT_TOPIC, payment.getUuid().toString(), alertEvent);
 

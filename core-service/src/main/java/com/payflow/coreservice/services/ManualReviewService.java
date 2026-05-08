@@ -5,11 +5,14 @@ import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.coreservice.builder.DecisionBuilder;
 import com.payflow.coreservice.builder.PaymentDetailsBuilder;
+import com.payflow.coreservice.builder.StatusHistoryBuilder;
 import com.payflow.coreservice.dto.factory.PaymentDetailsRequest;
 import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.dto.factory.PaymentDetailsRequest;
 import com.payflow.coreservice.model.Payment;
+import com.payflow.coreservice.model.StatusHistory;
 import com.payflow.coreservice.repository.PaymentRepository;
+import com.payflow.coreservice.repository.StatusHistoryRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
 import com.payflow.coreservice.strategy.factory.PaymentStatusHandlerFactory;
 import jakarta.transaction.Transactional;
@@ -28,6 +31,7 @@ import java.util.UUID;
 public class ManualReviewService {
 
     private final PaymentRepository paymentRepository;
+    private final StatusHistoryRepository statusHistoryRepository;
     private final PaymentStatusHandlerFactory handlerFactory;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -47,13 +51,17 @@ public class ManualReviewService {
     }
 
     @Transactional
-    public void processDecision(ManualReviewDecision decision){
-        Payment payment = paymentRepository.findByUuid(decision.getPaymentId())
+    public void processDecision(ManualReviewDecision decision, UUID paymentId){
+
+        Payment payment = paymentRepository.findByUuid(paymentId)
                 .orElseThrow(() -> new RuntimeException("Pagamento não encontrado"));
 
         log.info("Processando decisão manual: PaymentId={}, Decision={}, Reviewer={}",
-                decision.getPaymentId(), decision.getDecision(), decision.getReviewerId());
+                paymentId, decision.getDecision(), decision.getReviewerId());
 
+        StatusHistory history = StatusHistoryBuilder.fromManualReview(
+                paymentId, payment.getStatus(), decision);
+        statusHistoryRepository.save(history);
 
         FraudAnalysisResponse response = DecisionBuilder.fromDecision(decision);
 
@@ -61,6 +69,10 @@ public class ManualReviewService {
         handler.handle(payment, response);
 
         notifyDecisionProcessed(decision);
+    }
+
+    public List<StatusHistory> getHistoryBySource(String source){
+        return statusHistoryRepository.findSource(source);
     }
 
     private PaymentDetailsRequest toDetailsDTO(Payment payment){
