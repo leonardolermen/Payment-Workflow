@@ -72,7 +72,7 @@ public class ManualReviewService {
     }
 
     public List<StatusHistory> getHistoryBySource(String source){
-        return statusHistoryRepository.findSource(source);
+        return statusHistoryRepository.findBySource(source);
     }
 
     private PaymentDetailsRequest toDetailsDTO(Payment payment){

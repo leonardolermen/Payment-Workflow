@@ -37,4 +37,16 @@ public class KafkaTopicsConfig {
         return TopicBuilder.name("payflow.review.completed")
                 .partitions(3).replicas(1).build();
     }
+
+    @Bean
+    public NewTopic paymentAlertsDLQ(){
+        return TopicBuilder.name("payflow.payment.alerts.dlt")
+                .partitions(1).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic reviewCompletedDLQ(){
+        return TopicBuilder.name("payflow.review.completed.dlt")
+                .partitions(1).replicas(1).build();
+    }
 }

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface StatusHistoryRepository  extends JpaRepository<StatusHistory, UUID> {
-    List<StatusHistory> findSource(String source);
+    List<StatusHistory> findBySource(String source);
 }

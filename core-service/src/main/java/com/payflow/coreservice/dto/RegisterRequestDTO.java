@@ -16,11 +16,11 @@ public class RegisterRequestDTO {
     @Size(min = 3, max = 100)
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Email é obrigatório")
     @Email
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Senha é obrigatória")
     @Size(min = 6, max = 100)
     private String password;
 
