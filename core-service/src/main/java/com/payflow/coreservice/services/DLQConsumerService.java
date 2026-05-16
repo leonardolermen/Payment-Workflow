@@ -9,12 +9,18 @@ import org.springframework.stereotype.Service;
 public class DLQConsumerService {
     private static final Logger logger = LoggerFactory.getLogger(DLQConsumerService.class);
 
-    @KafkaListener(topics = "payflow.payment.alerts.dlq" , groupId = "dlq-group")
+    @KafkaListener(
+            topics = "payflow.payment.alerts.dlq" ,
+            groupId = "dlq-group",
+            containerFactory = "kafkaListenerContainerFactory")
     private void handlerPaymentAlertsDLQ(String message){
         logger.error("Mensagem enviada para DLQ (payflow.payment.alerts): {}", message);
     }
 
-    @KafkaListener(topics = "payflow.review.completed.dlq", groupId = "dlq-group")
+    @KafkaListener(
+            topics = "payflow.review.completed.dlq",
+            groupId = "dlq-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void handlerReviewCompletedDLQ(String message){
         logger.error("Mensagem enviada para DLQ (payflow.review.completed): {}", message);
     }

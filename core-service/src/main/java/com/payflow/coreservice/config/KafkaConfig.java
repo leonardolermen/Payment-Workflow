@@ -1,5 +1,7 @@
 package com.payflow.coreservice.config;
 
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.SerializationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -23,9 +25,18 @@ public class KafkaConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
 
-        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate);
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
+                kafkaTemplate,
+                (record, ex) ->{
+                    String originalTopic = record.topic();
+                    String dlqTopic = originalTopic + ".dlq";
+                    return new TopicPartition(dlqTopic, record.partition());
+                });
+
         FixedBackOff backOff = new FixedBackOff(1000, 3);
         DefaultErrorHandler errorHandler = new DefaultErrorHandler(recoverer, backOff);
+
+        errorHandler.addNotRetryableExceptions(SerializationException.class);
 
         factory.setCommonErrorHandler(errorHandler);
 

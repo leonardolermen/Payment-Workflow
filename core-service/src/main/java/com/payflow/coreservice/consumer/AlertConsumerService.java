@@ -12,21 +12,29 @@ public class AlertConsumerService {
 
     private static final Logger logger = LoggerFactory.getLogger(AlertConsumerService.class);
 
-    @KafkaListener(topics = "payflow.payment.alerts", groupId = "alert-group")
+    @KafkaListener(
+            topics = "payflow.payment.alerts",
+            groupId = "alert-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void handlerPaymentAlert(PaymentAlertEvent alert){
         logger.info("Alerta recebido: {} | Pagamento: {}",
                 alert.getAlertType(), alert.getPaymentId());
-
-        switch (alert.getAlertType()){
-            case "PENDING_REVIEW":
-                sendEmailToAnalysisTeam(alert);
-                break;
-            case "MANUAL_ANALYSIS":
-                notifyManualAnalysisSystem(alert);
-                break;
-            case  "SUSPICIOUS":
-                notifySecurityTeam(alert);
-                break;
+        try{
+            switch (alert.getAlertType()) {
+                case "PENDING_REVIEW":
+                    sendEmailToAnalysisTeam(alert);
+                    break;
+                case "MANUAL_ANALYSIS":
+                    notifyManualAnalysisSystem(alert);
+                    break;
+                case "SUSPICIOUS":
+                    notifySecurityTeam(alert);
+                    break;
+            }
+        } catch (Exception e) {
+            logger.error("Erro ao processar alerta: {} | Pagamento: {} | Erro: {}",
+                    alert.getAlertType(), alert.getPaymentId(), e.getMessage(), e);
+            throw e;
         }
     }
 
@@ -51,12 +59,21 @@ public class AlertConsumerService {
         }
     }
 
-    @KafkaListener(topics = "payflow.review.completed", groupId = "review-notification-group")
+    @KafkaListener(
+            topics = "payflow.review.completed",
+            groupId = "review-notification-group",
+            containerFactory = "kafkaListenerContainerFactory")
     public void handlerReviewCompleted(ManualReviewDecision decision){
         logger.info("Decisão processada e notificada: {} | Pagamento: {}",
                 decision.getDecision(), decision.getPaymentId());
+        try{
+            notifyExternalSystem(decision);
+        } catch (Exception e) {
+            logger.error("Erro ao notificar sistema externo: {} | Pagamento: {} | Erro: {}",
+                    decision.getDecision(), decision.getPaymentId(), e.getMessage(), e);
+            throw e;
+        }
 
-        notifyExternalSystem(decision);
     }
 
     private void notifyExternalSystem(ManualReviewDecision decision){

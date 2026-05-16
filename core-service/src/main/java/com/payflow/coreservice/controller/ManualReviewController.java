@@ -2,6 +2,7 @@ package com.payflow.coreservice.controller;
 
 import com.payflow.commons.dto.alert.ManualReviewDecision;
 import com.payflow.coreservice.services.ManualReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class ManualReviewController {
     }
 
     @PostMapping("/payment/{paymentId}")
-    public ResponseEntity<?> makeDecision(@PathVariable UUID paymentId, @RequestBody ManualReviewDecision decision){
+    public ResponseEntity<?> makeDecision(@Valid @PathVariable UUID paymentId, @RequestBody ManualReviewDecision decision){
 
         decision.setPaymentId(paymentId);
         manualReviewService.processDecision(decision, paymentId);
