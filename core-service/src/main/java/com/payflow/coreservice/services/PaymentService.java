@@ -87,12 +87,7 @@ public class PaymentService {
         // 4. Fraud (simulado)
         // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
         try {
-            FraudAnalysisRequest analysisRequest = FraudAnalysisRequest.builder()
-                    .paymentId(payment.getUuid())
-                    .payerId(payment.getPayerId())
-                    .payeeId(payment.getPayeeId())
-                    .amount(payment.getAmount())
-                    .build();
+            FraudAnalysisRequest analysisRequest = AnalysisRequestBuilder.fromAnalysisRequest(payment);
 
             FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(analysisRequest).getBody();
 
@@ -153,6 +148,20 @@ public class PaymentService {
         List<Payment> payments =
                 paymentRepository.findByPayerIdOrPayeeId(userId, userId);
 
+        return payments.stream()
+                .map(PaymentResponseFactory::fromPayment)
+                .toList();
+    }
+
+    public List<PaymentResponse> getByStatus(Enum_Payment status) {
+        List<Payment> payments = paymentRepository.findByStatus(status);
+        return payments.stream()
+                .map(PaymentResponseFactory::fromPayment)
+                .toList();
+    }
+
+    public List<PaymentResponse> getAll() {
+        List<Payment> payments = paymentRepository.findAll();
         return payments.stream()
                 .map(PaymentResponseFactory::fromPayment)
                 .toList();

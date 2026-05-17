@@ -1,0 +1,1 @@
+ALTER TABLE status_history DROP COLUMN payment_id;

@@ -1,0 +1,1 @@
+ALTER TABLE status_history ADD COLUMN owner_id UUID NOT NULL;

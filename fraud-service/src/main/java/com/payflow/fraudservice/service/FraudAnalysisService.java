@@ -56,7 +56,7 @@ public class FraudAnalysisService {
     private double calculateRiskScore(PaymentResponse payment, UserResponse payer, UserResponse payee) {
         double score = 0;
 
-        if(payment.getAmount().compareTo(new BigDecimal("40000"))> 0){
+        if(payment.getAmount().compareTo(new BigDecimal("25000"))> 0){
             score += 30;
         }
 

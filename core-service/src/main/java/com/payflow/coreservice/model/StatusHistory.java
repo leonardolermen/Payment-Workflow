@@ -29,6 +29,9 @@ public class StatusHistory {
     private UUID id;
 
     @Column(nullable = false)
+    private UUID ownerId;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Enum_Payment oldStatus;
 

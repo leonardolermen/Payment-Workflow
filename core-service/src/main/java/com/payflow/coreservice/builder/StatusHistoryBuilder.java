@@ -17,7 +17,7 @@ public class StatusHistoryBuilder {
             Enum_Payment.APPROVED : Enum_Payment.REJECTED;
 
         return StatusHistory.builder()
-                .id(UUID.randomUUID())
+                .ownerId(paymentId)
                 .oldStatus(oldStatus)
                 .newStatus(newStatus)
                 .changedBy(decision.getReviewerId())

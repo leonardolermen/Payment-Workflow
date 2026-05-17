@@ -75,6 +75,10 @@ public class ManualReviewService {
         return statusHistoryRepository.findBySource(source);
     }
 
+    public List<StatusHistory> getHistoryByPaymentId(UUID paymentId){
+        return statusHistoryRepository.findByOwnerId(paymentId);
+    }
+
     private PaymentDetailsRequest toDetailsDTO(Payment payment){
         return PaymentDetailsBuilder.fromDetails(payment);
     }

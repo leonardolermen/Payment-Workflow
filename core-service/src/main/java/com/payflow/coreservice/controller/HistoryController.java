@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/history")
@@ -20,6 +21,12 @@ public class HistoryController {
     @GetMapping("/source/{source}")
     public ResponseEntity<List<StatusHistory>> getHistoryBySource(@PathVariable String source){
         List<StatusHistory> history = manualReviewService.getHistoryBySource(source);
+        return ResponseEntity.ok(history);
+    }
+
+    @GetMapping("/payment/{paymentId}")
+    public ResponseEntity<List<StatusHistory>> getHistoryByPaymentId(@PathVariable UUID paymentId){
+        List<StatusHistory> history = manualReviewService.getHistoryByPaymentId(paymentId);
         return ResponseEntity.ok(history);
     }
 }
