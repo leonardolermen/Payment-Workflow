@@ -51,4 +51,11 @@ anti-fraud-service:
 internal-api:
   token: ${INTERNAL_API_TOKEN:dev-internal-shared-secret-change-me}
 
+logging:
+  level:
+    root: INFO
+    com.payflow: INFO
+    org.apache.kafka: WARN
+    org.springframework.kafka: WARN
+
 
