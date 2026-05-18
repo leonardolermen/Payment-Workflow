@@ -18,8 +18,25 @@ spring:
     consumer:
       group-id: core-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.trusted.packages: com.payflow.commons.dto
+        spring.json.use.type.headers: false
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.payflow.commons.dto.alert.PaymentAlertEvent
+        max.poll.interval.ms: 300000
+      listener:
+        ack-mode: record
+        retry:
+          max-attempts: 3
+          backoff:
+            initial: 1000
+            multiplier: 2
+            max: 10000
+      template:
+        default-topic: payflow.payment.alerts
 
 # JWT Configuration
 jwt:

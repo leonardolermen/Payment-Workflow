@@ -2,6 +2,7 @@ package com.payflow.coreservice.controller;
 
 import com.payflow.commons.dto.payment.PaymentRequest;
 import com.payflow.commons.dto.payment.PaymentResponse;
+import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.dto.PaymentRequestDTO;
 import com.payflow.coreservice.dto.PaymentResponseDTO;
 import com.payflow.coreservice.services.PaymentService;
@@ -47,5 +48,21 @@ public class PaymentController {
     @GetMapping("/users/{userId}")
     public List<PaymentResponse> getByUser(@PathVariable UUID userId) {
         return paymentService.getByUser(userId);
+    }
+
+    // =========================
+    // GET /payments/status/{status}
+    // =========================
+    @GetMapping("/status/{status}")
+    public List<PaymentResponse> getByStatus(@PathVariable Enum_Payment status) {
+        return paymentService.getByStatus(status);
+    }
+
+    // =========================
+    // GET /payments
+    // =========================
+    @GetMapping
+    public List<PaymentResponse> getAll() {
+        return paymentService.getAll();
     }
 }
