@@ -36,15 +36,15 @@ public class FraudController {
         log.info(
                 "fraud.analyze.request traceId={} paymentId={} payerId={} payeeId={}",
                 MDC.get("traceId"),
-                request.paymentId(),
-                request.payerId(),
-                request.payeeId()
+                request.getPaymentId(),
+                request.getPayerId(),
+                request.getPayeeId()
         );
         FraudAnalysisResponse response = fraudAnalysisService.analyzePayment(request);
         log.info(
                 "fraud.analyze.response traceId={} paymentId={} status={} score={} ",
                 MDC.get("traceId"),
-                request.paymentId(),
+                request.getPaymentId(),
                 response.getStatus(),
                 response.getScore()
         );

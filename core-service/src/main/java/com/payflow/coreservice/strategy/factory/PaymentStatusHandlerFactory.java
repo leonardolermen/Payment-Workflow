@@ -1,14 +1,12 @@
 package com.payflow.coreservice.strategy.factory;
 
 import com.payflow.commons.enums.fraud.Status_Fraud;
-import com.payflow.coreservice.repository.PaymentRepository;
-import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
-import com.payflow.coreservice.strategy.handlers.ApprovedHandler;
-import com.payflow.coreservice.strategy.handlers.ManualAnalysisHandler;
-import com.payflow.coreservice.strategy.handlers.PendingReviewHandler;
-import com.payflow.coreservice.strategy.handlers.RejectedHandler;
-import com.payflow.coreservice.strategy.handlers.SuspiciousHandler;
+import com.payflow.coreservice.strategy.handlers.paymen.status.handler.ApprovedHandler;
+import com.payflow.coreservice.strategy.handlers.paymen.status.handler.ManualAnalysisHandler;
+import com.payflow.coreservice.strategy.handlers.paymen.status.handler.PendingReviewHandler;
+import com.payflow.coreservice.strategy.handlers.paymen.status.handler.RejectedHandler;
+import com.payflow.coreservice.strategy.handlers.paymen.status.handler.SuspiciousHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;

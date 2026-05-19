@@ -2,6 +2,8 @@ package com.payflow.coreservice.consumer;
 
 import com.payflow.commons.dto.alert.ManualReviewDecision;
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
+import com.payflow.coreservice.strategy.handlers.alert.AlertHandler;
+import com.payflow.coreservice.strategy.handlers.alert.factory.AlertHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,6 +13,11 @@ import org.springframework.stereotype.Service;
 public class AlertConsumerService {
 
     private static final Logger logger = LoggerFactory.getLogger(AlertConsumerService.class);
+    private final AlertHandlerFactory alertHandlerFactory;
+
+    public AlertConsumerService(AlertHandlerFactory alertHandlerFactory) {
+        this.alertHandlerFactory = alertHandlerFactory;
+    }
 
     @KafkaListener(
             topics = "payflow.payment.alerts",
@@ -20,42 +27,12 @@ public class AlertConsumerService {
         logger.info("Alerta recebido: {} | Pagamento: {}",
                 alert.getAlertType(), alert.getPaymentId());
         try{
-            switch (alert.getAlertType()) {
-                case "PENDING_REVIEW":
-                    sendEmailToAnalysisTeam(alert);
-                    break;
-                case "MANUAL_ANALYSIS":
-                    notifyManualAnalysisSystem(alert);
-                    break;
-                case "SUSPICIOUS":
-                    notifySecurityTeam(alert);
-                    break;
-            }
+            AlertHandler handler = alertHandlerFactory.getHandler(alert.getAlertType());
+            handler.handle(alert);
         } catch (Exception e) {
             logger.error("Erro ao processar alerta: {} | Pagamento: {} | Erro: {}",
                     alert.getAlertType(), alert.getPaymentId(), e.getMessage(), e);
             throw e;
-        }
-    }
-
-    private void sendEmailToAnalysisTeam(PaymentAlertEvent alert){
-        if(alert.getAlertType().equals("PENDING_REVIEW")){
-            logger.info("Enviando email para equipe de análise: {} | Pagamento: {}",
-                    alert.getAlertType(), alert.getPaymentId());
-        }
-    }
-
-    private void notifyManualAnalysisSystem(PaymentAlertEvent alert){
-        if (alert.getAlertType().equals("MANUAL_ANALYSIS")){
-            logger.info("Enviando email para a equipe de análise manual: {} | Payment: {}",
-                    alert.getAlertType(), alert.getPaymentId());
-        }
-    }
-
-    private void notifySecurityTeam(PaymentAlertEvent alert){
-        if(alert.getAlertType().equals("SUSPICIOUS")){
-            logger.info("Enviando email para equipe de segurança: {} | Pagamento: {}",
-                    alert.getAlertType(), alert.getPaymentId());
         }
     }
 

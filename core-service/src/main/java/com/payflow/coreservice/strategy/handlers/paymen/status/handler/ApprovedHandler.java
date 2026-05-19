@@ -1,4 +1,4 @@
-package com.payflow.coreservice.strategy.handlers;
+package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;

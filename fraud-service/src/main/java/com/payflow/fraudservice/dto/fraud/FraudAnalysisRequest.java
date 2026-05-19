@@ -1,11 +1,22 @@
 package com.payflow.fraudservice.dto.fraud;
 
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record FraudAnalysisRequest(
-        UUID paymentId,
-        BigDecimal amount,
-        UUID payerId,
-        UUID payeeId
-) {}
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class FraudAnalysisRequest {
+
+    private UUID paymentId;
+    private BigDecimal amount;
+    private UUID payerId;
+    private UUID payeeId;
+
+}
+
+

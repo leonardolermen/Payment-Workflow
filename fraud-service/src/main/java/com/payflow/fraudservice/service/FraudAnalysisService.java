@@ -37,14 +37,14 @@ public class FraudAnalysisService {
 
     public FraudAnalysisResponse analyzePayment(FraudAnalysisRequest request){
 
-        PaymentResponse payment = coreServiceClient.getPaymentById(request.paymentId());
+        PaymentResponse payment = coreServiceClient.getPaymentById(request.getPaymentId());
 
-        UserResponse payer = coreServiceClient.getUserById(request.payerId());
-        UserResponse payee = coreServiceClient.getUserById(request.payeeId());
+        UserResponse payer = coreServiceClient.getUserById(request.getPayerId());
+        UserResponse payee = coreServiceClient.getUserById(request.getPayeeId());
 
         TransactionHistory history = new TransactionHistory(
-                request.payerId(),
-                historyCacheService.getUserTransactions(request.payerId())
+                request.getPayerId(),
+                historyCacheService.getUserTransactions(request.getPayerId())
         );
 
         RiskResult result = riskRuleEngine.evaluate(payment, payer, payee, history);
@@ -52,14 +52,14 @@ public class FraudAnalysisService {
         String reason = determineReason(result.score(), result.triggeredRules());
 
         FraudAnalysisLog log = new FraudAnalysisLog();
-        log.setPaymentId(request.paymentId());
+        log.setPaymentId(request.getPaymentId());
         log.setScore((double) result.score());
         log.setStatus(status);
         log.setReason(reason);
         log.setEvaluatedAt(LocalDateTime.now());
         fraudLogRepository.save(log);
 
-        historyCacheService.addTransaction(request.payerId(), request.paymentId(), request.payeeId(), payment.getAmount());
+        historyCacheService.addTransaction(request.getPayerId(), request.getPaymentId(), request.getPayeeId(), payment.getAmount());
 
         return FraudAnalysisResponse.builder()
                 .status(status)

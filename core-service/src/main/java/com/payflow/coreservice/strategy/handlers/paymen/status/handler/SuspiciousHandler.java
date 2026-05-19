@@ -1,4 +1,4 @@
-package com.payflow.coreservice.strategy.handlers;
+package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
@@ -14,15 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
-public class ManualAnalysisHandler implements PaymentStatusHandler {
+public class SuspiciousHandler implements PaymentStatusHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ManualAnalysisHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(SuspiciousHandler.class);
 
     private final PaymentRepository paymentRepository;
-
     private final KafkaTemplate<String, PaymentAlertEvent> kafkaTemplate;
 
     private static final String ALERT_TOPIC = "payflow.payment.alerts";
@@ -37,7 +35,6 @@ public class ManualAnalysisHandler implements PaymentStatusHandler {
 
         kafkaTemplate.send(ALERT_TOPIC, payment.getUuid().toString(), alertEvent);
 
-        logger.info("🔍 Pagamento em análise manual detalhada: {} | Alerta enviado via Kafka", payment.getUuid());
+        logger.info("🚨 Atividade suspeita detectada: {} | Alerta crítico enviado via Kafka", payment.getUuid());
     }
-
 }

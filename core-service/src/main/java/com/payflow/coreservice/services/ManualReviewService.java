@@ -68,7 +68,6 @@ public class ManualReviewService {
         PaymentStatusHandler handler = handlerFactory.getHandler(response.getStatus());
         handler.handle(payment, response);
 
-        notifyDecisionProcessed(decision);
     }
 
     public List<StatusHistory> getHistoryBySource(String source){
@@ -83,10 +82,4 @@ public class ManualReviewService {
         return PaymentDetailsBuilder.fromDetails(payment);
     }
 
-    private void notifyDecisionProcessed(ManualReviewDecision decision){
-
-        kafkaTemplate.send("payflow.review.completed", decision);
-
-        log.info("Decisão processada e notificada: {}", decision.getPaymentId());
-    }
 }

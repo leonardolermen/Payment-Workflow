@@ -25,6 +25,16 @@ public class KafkaConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
 
+        DefaultErrorHandler errorHandler = getDefaultErrorHandler(kafkaTemplate);
+
+        errorHandler.addNotRetryableExceptions(SerializationException.class);
+
+        factory.setCommonErrorHandler(errorHandler);
+
+        return factory;
+    }
+
+    private static DefaultErrorHandler getDefaultErrorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
         DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
                 (record, ex) ->{
@@ -34,12 +44,6 @@ public class KafkaConfig {
                 });
 
         FixedBackOff backOff = new FixedBackOff(1000, 3);
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler(recoverer, backOff);
-
-        errorHandler.addNotRetryableExceptions(SerializationException.class);
-
-        factory.setCommonErrorHandler(errorHandler);
-
-        return factory;
+        return new DefaultErrorHandler(recoverer, backOff);
     }
 }

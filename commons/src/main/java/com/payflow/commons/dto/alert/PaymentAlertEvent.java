@@ -1,5 +1,6 @@
 package com.payflow.commons.dto.alert;
 
+import com.payflow.commons.enums.alert.AlertType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class PaymentAlertEvent {
     private UUID payerId;
     private UUID payeeId;
     private BigDecimal amount;
-    private String alertType;
+    private AlertType alertType;
     private String reason;
     private LocalDateTime timestamp;
 }

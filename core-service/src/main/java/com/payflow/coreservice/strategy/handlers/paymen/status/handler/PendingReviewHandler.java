@@ -1,4 +1,4 @@
-package com.payflow.coreservice.strategy.handlers;
+package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor

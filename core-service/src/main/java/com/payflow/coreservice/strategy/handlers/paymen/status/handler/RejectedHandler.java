@@ -1,4 +1,4 @@
-package com.payflow.coreservice.strategy.handlers;
+package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
