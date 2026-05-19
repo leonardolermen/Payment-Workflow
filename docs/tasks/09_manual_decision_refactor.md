@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Mover completamente a lógica de decisões manuais de pagamentos do core-service para o raud-service, utilizando Kafka para comunicação assíncrona entre os serviços.
+Mover completamente a lógica de decisões manuais de pagamentos do core-service para o fraud-service, utilizando Kafka para comunicação assíncrona entre os serviços.
 
 ---
 
