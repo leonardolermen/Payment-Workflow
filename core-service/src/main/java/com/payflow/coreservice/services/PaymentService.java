@@ -7,8 +7,6 @@ import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.builder.AnalysisRequestBuilder;
 import com.payflow.coreservice.client.AntiFraudClient;
-import com.payflow.coreservice.dto.PaymentRequestDTO;
-import com.payflow.coreservice.dto.PaymentResponseDTO;
 import com.payflow.coreservice.dto.factory.PaymentResponseFactory;
 import com.payflow.coreservice.model.Payment;
 import com.payflow.coreservice.model.factory.PaymentFactory;
@@ -17,6 +15,7 @@ import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.Data;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,8 +26,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
-import static java.util.Objects.isNull;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Data
 @Service
@@ -39,17 +36,20 @@ public class PaymentService {
     private final AntiFraudClient antiFraudClient;
     private final PaymentPersistenceHelper paymentPersistenceHelper;
     private final PaymentStatusHandlerFactory handlerFactory;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public PaymentService(PaymentRepository paymentRepository,
                           UserRepository userRepository,
                           AntiFraudClient antiFraudClient,
                           PaymentPersistenceHelper paymentPersistenceHelper,
-                          PaymentStatusHandlerFactory handlerFactory) {
-        this.paymentRepository = paymentRepository;
+                          PaymentStatusHandlerFactory handlerFactory,
+                          RedisTemplate<String, Object> redisTemplate) {
         this.userRepository = userRepository;
         this.antiFraudClient = antiFraudClient;
         this.paymentPersistenceHelper = paymentPersistenceHelper;
         this.handlerFactory = handlerFactory;
+        this.paymentRepository = paymentRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     // =========================
@@ -57,10 +57,21 @@ public class PaymentService {
     // =========================
 
     @Transactional
-    public PaymentResponse createPayment(PaymentRequest request) {
+    public PaymentResponse createPayment(String idempotencyKey, PaymentRequest request) {
 
-        // 1. Idempotência
-        validateIdempotency(request.getIdempotencyKey());
+        // 1. Verificar cache no Redis
+        String redisKey = "payment:" + idempotencyKey;
+
+        Object cachedResponse =
+                redisTemplate.opsForValue().get(redisKey);
+
+        if (cachedResponse != null) {
+
+            return (PaymentResponse) cachedResponse;
+        }
+
+        // 2. Idempotência no banco
+        validateIdempotency(idempotencyKey);
 
         // 2. Buscar usuários
         User payer = findUser(request.getPayerId());
@@ -104,7 +115,17 @@ public class PaymentService {
             throw ex;
         }
 
-        return PaymentResponseFactory.fromPayment(payment);
+        PaymentResponse response =
+                PaymentResponseFactory.fromPayment(payment);
+
+        // salva no Redis por 24h
+        redisTemplate.opsForValue().set(
+                redisKey,
+                response,
+                java.time.Duration.ofHours(24)
+        );
+
+        return response;
     }
 
     // =========================
@@ -130,7 +151,7 @@ public class PaymentService {
     }
 
     private User findUser(UUID id) {
-        return userRepository.findByUuid(id)
+        return userRepository.findByUuidForUpdate(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
