@@ -2,10 +2,10 @@ package com.payflow.apigateway.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.payflow.apigateway.config.GatewayProperties;
 import com.payflow.apigateway.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -31,9 +31,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final JwtService jwtService;
     private final ObjectMapper objectMapper;
-
-    @Value("${gateway.public-paths}")
-    private List<String> publicPaths;
+    private final GatewayProperties gatewayProperties;
 
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
@@ -72,7 +70,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicPath(String path) {
-        return publicPaths.stream().anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
+        return gatewayProperties.getPublicPaths().stream().anyMatch(pattern -> PATH_MATCHER.match(pattern, path));
     }
 
     private Mono<Void> buildErrorResponse(ServerWebExchange exchange, HttpStatus status, String message) {
