@@ -79,9 +79,11 @@ Criar configuração de tópico payflow.manual.decision usando NewTopic bean.
 Criar DTO no módulo commons com campos necessários:
 - paymentId (UUID)
 - decision (enum: APPROVED/REJECTED)
-- eason (String)
-- eviewerId (UUID - opcional)
-- eviewedAt (Instant)
+- reason (String)
+
+reviewerId (UUID - opcional)
+- 
+reviewedAt (Instant)
 
 **Dica:** Usar Lombok para reduzir código boilerplate (@Data, @Builder, etc.)
 
@@ -135,8 +137,8 @@ Criar novo consumer para receber decisões manuais do Kafka.
 ### Passo 7: Adicionar Métodos no PaymentService
 
 Criar métodos para processar decisões manuais:
-- pproveManualPayment(UUID paymentId, String reason)
-- ejectManualPayment(UUID paymentId, String reason)
+- approveManualPayment(UUID paymentId, String reason)
+- rejectManualPayment(UUID paymentId, String reason)
 
 **O que considerar:**
 - Validar que o pagamento está em PENDING_REVIEW

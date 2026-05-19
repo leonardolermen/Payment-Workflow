@@ -91,8 +91,7 @@ Criar DTOs no módulo commons:
 
 **UserCreatedEvent:**
 - userId (UUID)
-- 
-ame (String)
+- name (String)
 - email (String)
 - document (String)
 - documentType (String)
@@ -100,11 +99,12 @@ ame (String)
 
 **UserKycResultEvent:**
 - userId (UUID)
-- esult (enum: APPROVED/REJECTED/MANUAL_REVIEW)
+- 
+result (enum: APPROVED/REJECTED/MANUAL_REVIEW)
 - score (int)
 - 	riggeredRules (List<String>)
-- eason (String)
-- nalyzedAt (Instant)
+- reason (String)
+- analyzedAt (Instant)
 
 **Dica:** Usar Lombok para reduzir código boilerplate
 
@@ -124,7 +124,8 @@ Criar componente que publica eventos de usuário criado no Kafka.
 
 ### Passo 5: Atualizar AuthService
 
-Modificar o método egister para:
+Modificar o método 
+egister para:
 - Criar usuário com status EM_ANALISE em vez de ACTIVE
 - Publicar evento de usuário criado via producer
 - Gerar JWT normalmente
@@ -185,8 +186,7 @@ Criar classe para encapsular dados do usuário para análise.
 
 **Campos:**
 - userId (UUID)
-- 
-ame (String)
+- name (String)
 - email (String)
 - document (String)
 - documentType (String)
