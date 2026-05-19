@@ -99,8 +99,7 @@ Criar DTOs no módulo commons:
 
 **UserKycResultEvent:**
 - userId (UUID)
-- 
-result (enum: APPROVED/REJECTED/MANUAL_REVIEW)
+- result (enum: APPROVED/REJECTED/MANUAL_REVIEW)
 - score (int)
 - 	riggeredRules (List<String>)
 - reason (String)
