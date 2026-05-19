@@ -17,6 +17,7 @@ public final class PaymentResponseFactory {
                 .amount(payment.getAmount())
                 .status(payment.getStatus())
                 .createdAt(payment.getCreatedAt())
+                .idempotencyKey(payment.getIdempotencyKey())
                .build();
     }
 }

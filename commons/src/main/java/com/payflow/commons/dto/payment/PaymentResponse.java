@@ -24,5 +24,6 @@ public class PaymentResponse {
     private BigDecimal amount;
     private Enum_Payment status;
     private LocalDateTime createdAt;
+    private String idempotencyKey;
 
 }

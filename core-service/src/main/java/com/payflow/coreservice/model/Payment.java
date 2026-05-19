@@ -37,7 +37,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private Enum_Payment status;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String idempotencyKey;
 
     private LocalDateTime createdAt;

@@ -57,8 +57,10 @@ public class PaymentService {
     // =========================
 
     @Transactional
-    public PaymentResponse createPayment(String idempotencyKey, PaymentRequest request) {
+    public PaymentResponse createPayment(PaymentRequest request) {
 
+        String idempotencyKey = UUID.randomUUID().toString();
+        request.setIdempotencyKey(idempotencyKey);
         // 1. Verificar cache no Redis
         String redisKey = "payment:" + idempotencyKey;
 
@@ -94,8 +96,6 @@ public class PaymentService {
         // consiga enxergar o registro quando fizer GET /payments/{id}.
         payment = paymentPersistenceHelper.saveInNewTx(payment);
 
-
-        // 4. Fraud (simulado)
         // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
         try {
             FraudAnalysisRequest analysisRequest = AnalysisRequestBuilder.fromAnalysisRequest(payment);
