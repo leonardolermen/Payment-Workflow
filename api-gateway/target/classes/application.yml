@@ -4,21 +4,47 @@ server:
 spring:
   application:
     name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
   cloud:
     gateway:
       routes:
+        # ─── Rotas públicas (sem JWT) ─────────────────────────────────────────
+        - id: core-auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/core/auth/**
+          filters:
+            - StripPrefix=2
+
+        # ─── core-service (protegido) ─────────────────────────────────────────
+        # /api/core/payments/** → core-service /payments/**
+        # /api/core/users/**    → core-service /users/**
+        # /api/core/api/**      → core-service /api/** (manual-review, history)
         - id: core-service
           uri: http://localhost:8081
           predicates:
             - Path=/api/core/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                key-resolver: "#{@ipKeyResolver}"
+
+        # ─── fraud-service (protegido) ────────────────────────────────────────
+        # /api/fraud/analyze        → fraud-service /fraud/analyze
+        # /api/fraud/analysis/{id}  → fraud-service /fraud/analysis/{id}
         - id: fraud-service
           uri: http://localhost:8082
           predicates:
             - Path=/api/fraud/**
           filters:
             - StripPrefix=1
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -26,3 +52,23 @@ spring:
             allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
             allowedHeaders: "*"
             allowCredentials: true
+
+# ─── JWT (mesmo secret do core-service) ─────────────────────────────────────
+jwt:
+  secret: ${JWT_SECRET:c2VjdXJlX3NlY3JldF9rZXlfZm9yX3BheWZsb3dfYXBwbGljYXRpb25fMjAyNA==}
+
+# ─── Token interno service-to-service ────────────────────────────────────────
+internal-api:
+  token: ${INTERNAL_API_TOKEN:dev-internal-shared-secret-change-me}
+
+# ─── Rotas públicas (sem JWT) — lista usada pelo JwtAuthenticationFilter ─────
+gateway:
+  public-paths:
+    - /api/core/auth/**
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.payflow.apigateway: INFO
+    org.springframework.cloud.gateway: WARN
+    org.springframework.security: WARN

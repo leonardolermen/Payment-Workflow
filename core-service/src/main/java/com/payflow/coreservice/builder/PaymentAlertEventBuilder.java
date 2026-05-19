@@ -2,6 +2,7 @@ package com.payflow.coreservice.builder;
 
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
+import com.payflow.commons.enums.alert.AlertType;
 import com.payflow.coreservice.model.Payment;
 
 public class PaymentAlertEventBuilder {
@@ -11,7 +12,7 @@ public class PaymentAlertEventBuilder {
                 .paymentId(payment.getUuid())
                 .payerId(payment.getPayerId())
                 .payeeId(payment.getPayeeId())
-                .alertType(response.getStatus().name())
+                .alertType(AlertType.valueOf(response.getStatus().name()))
                 .reason(response.getReason())
                 .timestamp(payment.getCreatedAt())
                 .build();

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("pendingReviewAlertHandler")
 public class PendingReviewHandler implements AlertHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(PendingReviewHandler.class);

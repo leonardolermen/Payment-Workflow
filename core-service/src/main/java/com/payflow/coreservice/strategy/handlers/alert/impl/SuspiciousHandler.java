@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("suspiciousAlertHandler")
 public class SuspiciousHandler implements AlertHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SuspiciousHandler.class);
