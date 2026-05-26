@@ -6,7 +6,7 @@ services:
     image: postgres:15-alpine
     container_name: payflow-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
@@ -22,7 +22,7 @@ services:
     image: redis:7-alpine
     container_name: payflow-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - payflow_net
     restart: unless-stopped

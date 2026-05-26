@@ -5,11 +5,14 @@ spring:
   application:
     name: core-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/payflow_db
+    url: jdbc:postgresql://localhost:5433/payflow_db
     username: postgres
     password: postgrespassword
   flyway:
     baseline-on-migrate: true
+  redis:
+    host: localhost
+    port: 6380
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -51,6 +54,16 @@ anti-fraud-service:
 internal-api:
   token: ${INTERNAL_API_TOKEN:dev-internal-shared-secret-change-me}
 
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${TRACEFLOW_COLLECTOR_URL:http://localhost:4317}/v1/traces
+      headers:
+        X-Workspace-Id: ${TRACEFLOW_WORKSPACE_ID:ws_dev}
+
 logging:
   level:
     root: INFO
@@ -58,4 +71,12 @@ logging:
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
 
-
+# ─── TraceFlow Observability SDK ───────────────────────────────────────────────
+# Add this block to ANY Spring Boot service to get full trace + log observability.
+# The starter auto-registers an HTTP filter, Feign interceptor and flushes logs.
+traceflow:
+  collector-url: ${TRACEFLOW_COLLECTOR_URL:http://localhost:4317}
+  workspace-id: ${TRACEFLOW_WORKSPACE_ID:ws_dev}
+  capture-http-body: true
+  redact-sensitive-fields: true
+  enabled: true

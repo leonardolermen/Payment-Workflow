@@ -19,6 +19,7 @@
   
   <modules>
     <module>commons</module>
+    <module>traceflow-spring-boot-starter</module>
     <module>api-gateway</module>
     <module>core-service</module>
     <module>fraud-service</module>
