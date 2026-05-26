@@ -15,6 +15,7 @@ import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
 
+@Slf4j
 @Data
 @Service
 public class PaymentService {
@@ -186,5 +188,57 @@ public class PaymentService {
         return payments.stream()
                 .map(PaymentResponseFactory::fromPayment)
                 .toList();
+    }
+
+    @Transactional
+    public void approveManualPayment(UUID paymentId, String reason){
+        log.info("Aprovando pagamento manual: PaymentId={}, Reason={}", paymentId, reason);
+
+        Payment payment = paymentRepository.findByUuid(paymentId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
+
+        if (payment.getStatus() != Enum_Payment.PENDING){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
+        }
+
+        User payer = findUser(payment.getPayerId());
+        if (payer.getBalance().compareTo(payment.getAmount()) < 0){
+            paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Saldo insuficiente");
+        }
+
+        payer.setBalance(payer.getBalance().subtract(payment.getAmount()));
+        User payee = findUser(payment.getPayeeId());
+        payee.setBalance(payee.getBalance().add(payment.getAmount()));
+
+        userRepository.save(payer);
+        userRepository.save(payee);
+
+        payment.setStatus(Enum_Payment.SUCCESS);
+        paymentRepository.save(payment);
+
+        log.info("Pagamento aprovado com sucesso: PaymentId={}" ,paymentId);
+    }
+
+    @Transactional
+    public void rejectManualPayment(UUID paymentId, String reason){
+        log.info("Rejeitando pagamento manual: PaymentId={}, Reason={}" ,paymentId, reason);
+
+        Payment payment = paymentRepository.findByUuid(paymentId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
+
+        if (payment.getStatus() != Enum_Payment.PENDING){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
+        }
+
+        payment.setStatus(Enum_Payment.REJECTED);
+        paymentRepository.save(payment);
+
+        log.info("Pagamento rejeitado: PaymentId={}" ,paymentId);
     }
 }
