@@ -1,5 +1,6 @@
 package com.payflow.fraudservice.controller;
 
+import com.payflow.commons.dto.alert.ManualReviewDecision;
 import com.payflow.fraudservice.service.ManualReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,9 @@ public class ManualAnalyzeController {
 
     @PutMapping("/payment/{paymentId}")
     public ResponseEntity<String> manualAnalyze(@PathVariable UUID paymentId,
-                                                @RequestParam String decision,
-                                                @RequestParam String reviewerId,
-                                                @RequestParam(required = false) String reason){
-        manualReviewService.processPaymentDecision(paymentId, decision, reviewerId, reason);
+                                                @RequestBody ManualReviewDecision decision){
+        manualReviewService.processPaymentDecision(paymentId, decision.getDecision(),
+                decision.getReviewerId(), decision.getReason());
         return ResponseEntity.ok("Decisão manual processada com sucesso");
     }
 

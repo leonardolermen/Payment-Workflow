@@ -25,7 +25,6 @@ spring:
         spring.json.use.type.headers: false
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
-        spring.json.value.default.type: com.payflow.commons.dto.alert.PaymentAlertEvent
         max.poll.interval.ms: 300000
       listener:
         ack-mode: record
@@ -37,6 +36,12 @@ spring:
             max: 10000
       template:
         default-topic: payflow.payment.alerts
+    dlq-consumer:
+      bootstrap-servers: localhost:9092
+      group-id: dlq-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
 
 # JWT Configuration
 jwt:
@@ -55,7 +60,10 @@ logging:
   level:
     root: INFO
     com.payflow: INFO
-    org.apache.kafka: WARN
-    org.springframework.kafka: WARN
+    org.apache.kafka: INFO
+    org.springframework.kafka: INFO
+    com.payflow.coreservice.consumer: DEBUG
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
 
 
