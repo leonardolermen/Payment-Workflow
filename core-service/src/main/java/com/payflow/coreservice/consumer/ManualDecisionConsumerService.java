@@ -17,7 +17,7 @@ public class ManualDecisionConsumerService {
     @KafkaListener
             (topics = "payflow.manual.decision",
             groupId = "manual-decision-group",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "manualDecisionListenerContainerFactory")
     public void handleManualDecision(ManualReviewDecision decision){
         log.info("Decisão manual recebida: PaymentId={}, Decision={}, Reviewer={}" ,
                 decision.getPaymentId(), decision.getDecision(), decision.getReviewerId(), decision.getReason());

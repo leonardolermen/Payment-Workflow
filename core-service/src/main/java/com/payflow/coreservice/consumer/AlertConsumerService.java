@@ -22,7 +22,7 @@ public class AlertConsumerService {
     @KafkaListener(
             topics = "payflow.payment.alerts",
             groupId = "alert-group",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "paymentAlertListenerContainerFactory")
     public void handlerPaymentAlert(PaymentAlertEvent alert){
         logger.info("Alerta recebido: {} | Pagamento: {}",
                 alert.getAlertType(), alert.getPaymentId());
@@ -39,7 +39,7 @@ public class AlertConsumerService {
     @KafkaListener(
             topics = "payflow.review.completed",
             groupId = "review-notification-group",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "manualDecisionListenerContainerFactory")
     public void handlerReviewCompleted(ManualReviewDecision decision){
         logger.info("Decisão processada e notificada: {} | Pagamento: {}",
                 decision.getDecision(), decision.getPaymentId());

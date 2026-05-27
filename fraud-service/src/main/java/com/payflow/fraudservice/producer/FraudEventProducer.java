@@ -14,6 +14,7 @@ public class FraudEventProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendManualDecision(ManualReviewDecision decision){
+        log.info("Decisão a ser enviada");
         kafkaTemplate.send("payflow.manual.decision" , decision);
         log.info("Decisão manual enviada: PaymentId={}, Decision={}, Reviewer={}",
                 decision.getPaymentId(), decision.getDecision(), decision.getReviewerId());
