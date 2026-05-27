@@ -47,9 +47,14 @@ public class TraceFlowClient {
                 .timeout(Duration.ofSeconds(3))
                 .build();
 
-        HTTP.sendAsync(request, HttpResponse.BodyHandlers.discarding())
+        HTTP.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(res -> {
+                    if (res.statusCode() >= 400) {
+                        log.error("[TraceFlow] log send failed with status: {} body: {}", res.statusCode(), res.body());
+                    }
+                })
                 .exceptionally(ex -> {
-                    log.debug("[TraceFlow] log send failed: {}", ex.getMessage());
+                    log.error("[TraceFlow] log send exception: {}", ex.getMessage());
                     return null;
                 });
     }
