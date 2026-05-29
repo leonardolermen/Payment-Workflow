@@ -12,7 +12,7 @@ public class DLQConsumerService {
     @KafkaListener(
             topics = "payflow.payment.alerts.dlq" ,
             groupId = "dlq-group",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "dlqListenerContainerFactory")
     private void handlerPaymentAlertsDLQ(String message){
         logger.error("Mensagem enviada para DLQ (payflow.payment.alerts): {}", message);
     }
@@ -20,8 +20,16 @@ public class DLQConsumerService {
     @KafkaListener(
             topics = "payflow.review.completed.dlq",
             groupId = "dlq-group",
-            containerFactory = "kafkaListenerContainerFactory")
+            containerFactory = "dlqListenerContainerFactory")
     public void handlerReviewCompletedDLQ(String message){
         logger.error("Mensagem enviada para DLQ (payflow.review.completed): {}", message);
+    }
+
+    @KafkaListener(
+            topics = "payflow.manual.decision.dlq",
+            groupId = "dlq-group",
+            containerFactory = "dlqListenerContainerFactory")
+    public void handlerManualDecisionDLQ(String message){
+        logger.error("Mensagem enviada para DLQ (payflow.manual.decision): {}", message);
     }
 }
