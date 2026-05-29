@@ -9,11 +9,7 @@ import com.payflow.coreservice.builder.AnalysisRequestBuilder;
 import com.payflow.coreservice.client.AntiFraudClient;
 import com.payflow.coreservice.dto.factory.PaymentResponseFactory;
 import com.payflow.coreservice.model.Payment;
-import com.payflow.coreservice.model.factory.PaymentFactory;
-import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.repository.PaymentRepository;
-import com.payflow.coreservice.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -25,26 +21,21 @@ import com.payflow.coreservice.strategy.factory.PaymentStatusHandlerFactory;
 import java.util.List;
 import java.util.UUID;
 
-import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
-
 @Data
 @Service
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final UserRepository userRepository;
     private final AntiFraudClient antiFraudClient;
     private final PaymentPersistenceHelper paymentPersistenceHelper;
     private final PaymentStatusHandlerFactory handlerFactory;
     private final RedisTemplate<String, Object> redisTemplate;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          UserRepository userRepository,
                           AntiFraudClient antiFraudClient,
                           PaymentPersistenceHelper paymentPersistenceHelper,
                           PaymentStatusHandlerFactory handlerFactory,
                           RedisTemplate<String, Object> redisTemplate) {
-        this.userRepository = userRepository;
         this.antiFraudClient = antiFraudClient;
         this.paymentPersistenceHelper = paymentPersistenceHelper;
         this.handlerFactory = handlerFactory;
@@ -56,7 +47,6 @@ public class PaymentService {
     // CREATE PAYMENT
     // =========================
 
-    @Transactional
     public PaymentResponse createPayment(PaymentRequest request) {
 
         String idempotencyKey = UUID.randomUUID().toString();
@@ -72,29 +62,7 @@ public class PaymentService {
             return (PaymentResponse) cachedResponse;
         }
 
-        // 2. Idempotência no banco
-        validateIdempotency(idempotencyKey);
-
-        // 2. Buscar usuários
-        User payer = findUser(request.getPayerId());
-        User payee = findUser(request.getPayeeId());
-
-        // 3. Regras de negócio
-        if (request.getPayerId().equals(request.getPayeeId())) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Transferência inválida");
-        }
-
-        if (payer.getBalance().compareTo(request.getAmount()) < 0) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Saldo insuficiente");
-        }
-
-        Payment payment = PaymentFactory.fromRequest(request, Enum_Payment.PENDING);
-
-        // Persiste em transação separada (REQUIRES_NEW) para que o fraud-service
-        // consiga enxergar o registro quando fizer GET /payments/{id}.
-        payment = paymentPersistenceHelper.saveInNewTx(payment);
+        Payment payment = paymentPersistenceHelper.createPendingPayment(request);
 
         // TODO design pattern strategy de acordo com cada status devolvido pelo antifraud
         try {
@@ -131,30 +99,6 @@ public class PaymentService {
     // =========================
     // HELPERS
     // =========================
-
-    private void validateIdempotency(String key) {
-        if (paymentRepository.findByIdempotencyKey(key).isPresent()) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "Pagamento já processado");
-        }
-    }
-
-    private void authorizePayment(Payment payment) {
-
-        FraudAnalysisResponse analysisResponse = antiFraudClient.analyzeTransaction(AnalysisRequestBuilder.fromAnalysisRequest(payment)).getBody();
-
-        assert analysisResponse != null;
-        if (analysisResponse.getStatus().equals(REJECTED)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Pagamento não autorizado");
-        }
-    }
-
-    private User findUser(UUID id) {
-        return userRepository.findByUuidForUpdate(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Usuário não encontrado"));
-    }
 
     public PaymentResponse getById(UUID id) {
         Payment payment = paymentRepository.findByUuid(id)
