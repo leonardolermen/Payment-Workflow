@@ -5,7 +5,7 @@ spring:
   application:
     name: fraud-service
   datasource:
-    url: jdbc:postgresql://localhost:5433/fraud_db
+    url: jdbc:postgresql://localhost:5432/fraud_db
     username: postgres
     password: postgrespassword
   flyway:
