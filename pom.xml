@@ -32,9 +32,9 @@
 
   <repositories>
     <repository>
-      <id>github-traceflow</id>
-      <name>TraceFlow GitHub Packages</name>
-      <url>https://maven.pkg.github.com/leonardolermen/Tracer</url>
+      <id>traceflow-pages</id>
+      <name>TraceFlow GitHub Pages</name>
+      <url>https://leonardolermen.github.io/Tracer/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>
     </repository>
