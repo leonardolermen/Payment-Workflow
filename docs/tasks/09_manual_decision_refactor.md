@@ -1,5 +1,30 @@
 # Manual Decision Refactor - Dev Jorge
 
+## Status: ⚠️ PARCIALMENTE IMPLEMENTADO
+
+## Progresso Atual
+
+### ✅ Implementado
+- [x] **Tópico Kafka payflow.manual.decision** criado em KafkaTopicsConfig
+- [x] **DTO ManualReviewDecision** criado no módulo commons
+- [x] **Producer FraudEventProducer** criado no fraud-service
+- [x] **ManualReviewService** criado no fraud-service com processPaymentDecision
+- [x] **ManualAnalyzeController** no fraud-service com endpoint PUT /manual-analyze/payment/{paymentId}
+- [x] **Consumer ManualDecisionConsumerService** criado no core-service
+- [x] **Métodos no PaymentService**: approveManualPayment e rejectManualPayment implementados
+- [x] **Strategy Pattern** para tratamento de status (PaymentStatusHandlerFactory)
+- [x] **DLQ configurada** para payflow.manual.decision.dlq
+
+### ❌ Pendente
+- [ ] Remover ManualReviewController do Core Service (se existir)
+- [ ] Remover ManualReviewService do Core Service (se existir)
+- [ ] Renomear ManualAnalyzeController para ManualReviewController no fraud-service
+- [ ] Implementar endpoint PUT /manual-analyze/user/{userId} no fraud-service
+- [ ] Adicionar status PENDING_REVIEW no enum Enum_Payment (se necessário)
+- [ ] Persistir Transaction após aprovação/rejeição manual
+
+---
+
 ## Objetivo
 
 Mover completamente a lógica de decisões manuais de pagamentos do core-service para o fraud-service, utilizando Kafka para comunicação assíncrona entre os serviços.

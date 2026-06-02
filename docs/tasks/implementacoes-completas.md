@@ -178,3 +178,82 @@ Todas as funcionalidades já implementadas no ecossistema PayFlow.
 
 ### Kafka Config
 - ✅ Error handler com DLQ, retry com backoff
+
+---
+
+## 2.12 Kafka Infrastructure
+
+### Tópicos Configurados (KafkaTopicsConfig)
+- ✅ payflow.payment.requested
+- ✅ payflow.fraud.completed
+- ✅ payflow.payment.alerts
+- ✅ payflow.transaction.completed
+- ✅ payflow.review.completed
+- ✅ payflow.payment.alerts.dlq
+- ✅ payflow.review.completed.dlq
+- ✅ payflow.manual.decision
+- ✅ payflow.manual.decision.dlq
+
+### Consumers no Core Service
+- ✅ **AlertConsumerService**: Processa alertas de fraude com Strategy Pattern
+  - @KafkaListener(topics = "payflow.payment.alerts")
+  - @KafkaListener(topics = "payflow.review.completed")
+  - Usa AlertHandlerFactory para delegar conforme AlertType
+- ✅ **ManualDecisionConsumerService**: Processa decisões manuais
+  - @KafkaListener(topics = "payflow.manual.decision")
+  - Delega para PaymentService (approveManualPayment/rejectManualPayment)
+- ✅ **DLQConsumerService**: Processa mensagens falhas da DLQ
+
+### Producers no Fraud Service
+- ✅ **FraudEventProducer**: Publica eventos de decisão manual
+  - sendManualDecision(ManualReviewDecision)
+
+---
+
+## 2.13 Redis Integration
+
+### Configuração
+- ✅ **RedisConfig**: Configuração do RedisTemplate
+- ✅ **spring-boot-starter-data-redis**: Dependência adicionada
+
+### Uso no PaymentService
+- ✅ Idempotência com RedisTemplate
+- ✅ Cache de respostas com TTL de 24h
+- ✅ Verificação de cache antes de processar pagamento
+
+---
+
+## 2.14 Observabilidade
+
+### Dependências
+- ✅ **spring-boot-starter-actuator**: Adicionado em ambos os serviços
+- ✅ **micrometer-tracing-bridge-otel**: Tracing distribuído com OpenTelemetry
+- ✅ **opentelemetry-exporter-otlp**: Exportação de métricas
+
+### Tracing
+- ✅ **TraceFlow integration**: Biblioteca customizada para tracing
+- ✅ **RequestLoggingFilter**: Injeta traceId no MDC
+- ✅ Propagação de traceId entre serviços
+
+---
+
+## 2.15 Controllers Adicionais
+
+### Core Service
+- ✅ **HistoryController**: Endpoint para histórico de status
+  - GET /history/payment/{paymentId}
+  - GET /history/user/{userId}
+  - GET /history/source/{source}
+
+### Fraud Service
+- ✅ **ManualAnalyzeController**: Endpoints para análise manual
+  - PUT /manual-analyze/payment/{paymentId}
+  - PUT /manual-analyze/user/{userId} (TODO)
+
+---
+
+## 2.16 Migrations Adicionais
+
+- ✅ V5: fix_status_history.sql - Corrige tabela status_history
+- ✅ V6: fix_statusHistory.sql - Correções adicionais
+- ✅ V7: fix_statusHistory_.sql - Remove coluna payment_id

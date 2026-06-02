@@ -1,56 +1,60 @@
-# PayFlow - Plano Detalhado de Tarefas (Tasks de ImplementaÁ„o)
+# PayFlow - Plano Detalhado de Tarefas (Tasks de Implementa√ß√£o)
 
-Este documento centraliza todas as etapas tÈcnicas do ecossistema PayFlow com status real extraÌdo do cÛdigo, dÌvidas tÈcnicas identificadas e ideias de melhoria.
+Este documento centraliza todas as etapas t√©cnicas do ecossistema PayFlow com status real extra√≠do do c√≥digo, d√≠vidas t√©cnicas identificadas e ideias de melhoria.
 
-**Legenda:** ? Feito ∑ ?? Parcial/DivergÍncia ∑ ?? Bug/DÌvida tÈcnica ∑ [ ] Pendente ∑ ?? Ideia nova
+**Legenda:** ? Feito ¬∑ ?? Parcial/Diverg√™ncia ¬∑ ?? Bug/D√≠vida t√©cnica ¬∑ [ ] Pendente ¬∑ ?? Ideia nova
 
 ---
 
-## ?? Estrutura de DocumentaÁ„o
+## ?? Estrutura de Documenta√ß√£o
 
-A documentaÁ„o foi dividida em arquivos separados para melhor organizaÁ„o:
+A documenta√ß√£o foi dividida em arquivos separados para melhor organiza√ß√£o:
 
-### ?? [Bugs CrÌticos](./bugs-criticos.md)
-Bugs tÈcnicos que precisam ser corrigidos com prioridade alta.
-- Entidade Transaction incompleta
-- MANUAL_ANALYSIS n„o tratado no PaymentService
-- ConcorrÍncia no saldo (double-spend risk)
+### ?? [Bugs Cr√≠ticos](./bugs-criticos.md)
+Bugs t√©cnicos que precisam ser corrigidos com prioridade alta.
+- Entidade Transaction incompleta (1 bug ativo)
+- MANUAL_ANALYSIS n√£o tratado no PaymentService (‚úÖ CORRIGIDO)
+- Concorr√™ncia no saldo (double-spend risk) (‚úÖ CORRIGIDO)
 
-### ? [ImplementaÁıes Completas](./implementacoes-completas.md)
-Todas as funcionalidades j· implementadas no ecossistema PayFlow.
-- Core Service (entidades, repositÛrios, services, controllers, Kafka consumers)
-- Fraud Service (motor de regras, cache de histÛrico, controllers)
+### ? [Implementa√ß√µes Completas](./implementacoes-completas.md)
+Todas as funcionalidades j√° implementadas no ecossistema PayFlow.
+- Core Service (entidades, reposit√≥rios, services, controllers, Kafka consumers)
+- Fraud Service (motor de regras, cache de hist√≥rico, controllers)
 - Commons Module (DTOs e Enums)
-- SeguranÁa e Gateway
+- Seguran√ßa e Gateway
+- Kafka Infrastructure (9 t√≥picos configurados)
+- Redis Integration (idempot√™ncia implementada)
+- Observabilidade (Actuator, OpenTelemetry)
+- Controllers adicionais (HistoryController, ManualAnalyzeController)
 
-### [ ] [Melhorias Pendentes](./melhorias-pendentes.md)
-Melhorias que fazem sentido implementar (prioridade mÈdia).
-- ValidaÁ„o de DTOs
-- IdempotÍncia com Redis
-- Refresh Token
-- Roles e autorizaÁ„o granular
-- Timeout em transaÁıes
-- Circuit Breaker
-- Propagar traceId
+### ‚ö†Ô∏è [Melhorias Pendentes](./melhorias-pendentes.md)
+Melhorias que fazem sentido implementar (prioridade m√©dia).
+- Valida√ß√£o de DTOs (‚ö†Ô∏è Parcial)
+- Idempot√™ncia com Redis (‚úÖ Completo)
+- Refresh Token (‚ùå N√£o implementado)
+- Roles e autoriza√ß√£o granular (‚ö†Ô∏è Parcial)
+- Timeout em transa√ß√µes (‚ùå N√£o implementado)
+- Circuit Breaker (‚ùå N√£o implementado)
+- Propagar traceId (‚úÖ Completo)
 
-### [ ] [Funcionalidades Futuras](./funcionalidades-futuras.md)
-Funcionalidades planejadas para implementaÁ„o futura (prioridade baixa).
-- Kafka Event-Driven Architecture completa
-- NotificaÁıes (webhook, email, DLQ)
-- Testes (unit·rios, integraÁ„o)
-- DocumentaÁ„o de API (OpenAPI)
-- Observabilidade (Actuator, Prometheus, Grafana)
-- Listagens com paginaÁ„o
+### ‚ö†Ô∏è [Funcionalidades Futuras](./funcionalidades-futuras.md)
+Funcionalidades planejadas para implementa√ß√£o futura (prioridade baixa).
+- Kafka Event-Driven Architecture (‚ö†Ô∏è Parcial - 8 t√≥picos configurados)
+- Notifica√ß√µes (‚ö†Ô∏è Parcial - DLQ e retry implementados)
+- Testes (‚ùå N√£o implementado)
+- Documenta√ß√£o de API (‚ùå N√£o implementado)
+- Observabilidade (‚ö†Ô∏è Parcial - depend√™ncias adicionadas)
+- Listagens com pagina√ß√£o (‚ö†Ô∏è Parcial - endpoints sem Pageable)
 
 ### ?? [Ideias Opcionais](./ideias-opcionais.md)
 Ideias que podem ser consideradas para melhorias futuras.
 - Webhook personalizado
 - Outbox Pattern
-- EvoluÁ„o para Drools/IA
+- Evolu√ß√£o para Drools/IA
 - Rate limiting
 - Auditoria completa
 - Feature flags
-- IntegraÁ„o com provedores reais
+- Integra√ß√£o com provedores reais
 
 ---
 
@@ -58,32 +62,32 @@ Ideias que podem ser consideradas para melhorias futuras.
 
 | Categoria | Status | Arquivo |
 |-----------|--------|---------|
-| Bugs CrÌticos | ?? 3 bugs | [bugs-criticos.md](./bugs-criticos.md) |
-| ImplementaÁıes | ? Completo | [implementacoes-completas.md](./implementacoes-completas.md) |
-| Melhorias | [ ] 7 itens | [melhorias-pendentes.md](./melhorias-pendentes.md) |
-| Funcionalidades Futuras | [ ] 6 ·reas | [funcionalidades-futuras.md](./funcionalidades-futuras.md) |
+| Bugs Cr√≠ticos | ?? 1 bug ativo (2 corrigidos) | [bugs-criticos.md](./bugs-criticos.md) |
+| Implementa√ß√µes | ? Completo + novas implementa√ß√µes | [implementacoes-completas.md](./implementacoes-completas.md) |
+| Melhorias | ‚ö†Ô∏è 3 implementadas, 4 pendentes | [melhorias-pendentes.md](./melhorias-pendentes.md) |
+| Funcionalidades Futuras | ‚ö†Ô∏è 3 parciais, 3 pendentes | [funcionalidades-futuras.md](./funcionalidades-futuras.md) |
 | Ideias | ?? 7 ideias | [ideias-opcionais.md](./ideias-opcionais.md) |
 
 
-## ????? Tasks EspecÌficas por Desenvolvedor
+## ????? Tasks Espec√≠ficas por Desenvolvedor
 
 ### [Manual Decision Refactor - Dev Jorge](./09_manual_decision_refactor.md)
-Mover completamente a lÛgica de decisıes manuais de pagamentos do core-service para o fraud-service, utilizando Kafka para comunicaÁ„o assÌncrona.
+Mover completamente a l√≥gica de decis√µes manuais de pagamentos do core-service para o fraud-service, utilizando Kafka para comunica√ß√£o ass√≠ncrona.
 
 - Remover ManualReviewController e ManualReviewService do core-service
-- Centralizar toda lÛgica de decis„o manual no fraud-service
-- Criar tÛpico Kafka payflow.manual.decision
+- Centralizar toda l√≥gica de decis√£o manual no fraud-service
+- Criar t√≥pico Kafka payflow.manual.decision
 - Implementar producer no fraud-service e consumer no core-service
 - Fluxo: Fraud Service ? Kafka ? Core Service
 
 ### [User KYC Flow - Dev Higao](./10_user_kyc_flow.md)
-Implementar fluxo de KYC (Know Your Customer) para novos usu·rios, criando-os com status EM_ANALISE e validando via fraud-service.
+Implementar fluxo de KYC (Know Your Customer) para novos usu√°rios, criando-os com status EM_ANALISE e validando via fraud-service.
 
-- Criar usu·rio com status EM_ANALISE ao registrar
+- Criar usu√°rio com status EM_ANALISE ao registrar
 - Enviar evento via Kafka para fraud-service
-- Implementar regras b·sicas de KYC (email tempor·rio, documento inv·lido, etc.)
+- Implementar regras b√°sicas de KYC (email tempor√°rio, documento inv√°lido, etc.)
 - Receber resultado e atualizar status (ACTIVE/BLOCKED)
-- Criar tÛpicos Kafka payflow.user.created e payflow.user.kyc.result
+- Criar t√≥picos Kafka payflow.user.created e payflow.user.kyc.result
 
 ---
 
@@ -91,9 +95,9 @@ Implementar fluxo de KYC (Know Your Customer) para novos usu·rios, criando-os co
 
 | Categoria | Status | Arquivo |
 |-----------|--------|---------|
-| Bugs CrÌticos | ?? 3 bugs | [bugs-criticos.md](./bugs-criticos.md) |
-| ImplementaÁıes | ? Completo | [implementacoes-completas.md](./implementacoes-completas.md) |
-| Melhorias | [ ] 7 itens | [melhorias-pendentes.md](./melhorias-pendentes.md) |
-| Funcionalidades Futuras | [ ] 6 ·reas | [funcionalidades-futuras.md](./funcionalidades-futuras.md) |
+| Bugs Cr√≠ticos | ?? 1 bug ativo (2 corrigidos) | [bugs-criticos.md](./bugs-criticos.md) |
+| Implementa√ß√µes | ? Completo + novas implementa√ß√µes | [implementacoes-completas.md](./implementacoes-completas.md) |
+| Melhorias | ‚ö†Ô∏è 3 implementadas, 4 pendentes | [melhorias-pendentes.md](./melhorias-pendentes.md) |
+| Funcionalidades Futuras | ‚ö†Ô∏è 3 parciais, 3 pendentes | [funcionalidades-futuras.md](./funcionalidades-futuras.md) |
 | Ideias | ?? 7 ideias | [ideias-opcionais.md](./ideias-opcionais.md) |
-| Tasks EspecÌficas | [ ] 2 tasks | [09_manual_decision_refactor.md](./09_manual_decision_refactor.md), [10_user_kyc_flow.md](./10_user_kyc_flow.md) |
+| Tasks Espec√≠ficas | ‚ö†Ô∏è 1 parcial, 1 n√£o iniciado | [09_manual_decision_refactor.md](./09_manual_decision_refactor.md), [10_user_kyc_flow.md](./10_user_kyc_flow.md) |
