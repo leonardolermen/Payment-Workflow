@@ -24,27 +24,9 @@ core-service:
 internal-api:
   token: ${INTERNAL_API_TOKEN:dev-internal-shared-secret-change-me}
 
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-  otlp:
-    tracing:
-      endpoint: ${TRACEFLOW_COLLECTOR_URL:http://localhost:4317}/v1/traces
-      headers:
-        x-api-key: ${TRACEFLOW_API_KEY:tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592}
-
 logging:
   level:
     root: INFO
     com.payflow: INFO
     org.apache.kafka: WARN
     org.springframework.kafka: WARN
-
-# ─── TraceFlow Observability SDK ───────────────────────────────────────────────
-traceflow:
-  collector-url: ${TRACEFLOW_COLLECTOR_URL:http://localhost:4317}
-  api-key: ${TRACEFLOW_API_KEY:tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592}
-  capture-http-body: true
-  redact-sensitive-fields: true
-  enabled: true
