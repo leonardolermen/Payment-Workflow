@@ -40,13 +40,13 @@ public class KafkaTopicsConfig {
 
     @Bean
     public NewTopic paymentAlertsDLQ(){
-        return TopicBuilder.name("payflow.payment.alerts.dlt")
+        return TopicBuilder.name("payflow.payment.alerts.dlq")
                 .partitions(1).replicas(1).build();
     }
 
     @Bean
     public NewTopic reviewCompletedDLQ(){
-        return TopicBuilder.name("payflow.review.completed.dlt")
+        return TopicBuilder.name("payflow.review.completed.dlq")
                 .partitions(1).replicas(1).build();
     }
 
@@ -66,4 +66,14 @@ public class KafkaTopicsConfig {
                 .build();
     }
 
+    public NewTopic manualDecisionTopic(){
+        return TopicBuilder.name("payflow.manual.decision")
+                .partitions(3).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic manualDecisionDLQ(){
+        return TopicBuilder.name("payflow.manual.decision.dlq")
+                .partitions(3).replicas(1).build();
+    }
 }

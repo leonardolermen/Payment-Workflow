@@ -1,7 +1,7 @@
 package com.payflow.coreservice.controller;
 
 import com.payflow.coreservice.model.StatusHistory;
-import com.payflow.coreservice.services.ManualReviewService;
+import com.payflow.coreservice.repository.StatusHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +16,18 @@ import java.util.UUID;
 @RequestMapping("api/history")
 @RequiredArgsConstructor
 public class HistoryController {
-    private final ManualReviewService manualReviewService;
+
+    private final StatusHistoryRepository statusHistoryRepository;
 
     @GetMapping("/source/{source}")
     public ResponseEntity<List<StatusHistory>> getHistoryBySource(@PathVariable String source){
-        List<StatusHistory> history = manualReviewService.getHistoryBySource(source);
+        List<StatusHistory> history = statusHistoryRepository.findBySource(source);
         return ResponseEntity.ok(history);
     }
 
     @GetMapping("/payment/{paymentId}")
     public ResponseEntity<List<StatusHistory>> getHistoryByPaymentId(@PathVariable UUID paymentId){
-        List<StatusHistory> history = manualReviewService.getHistoryByPaymentId(paymentId);
+        List<StatusHistory> history = statusHistoryRepository.findByOwnerId(paymentId);
         return ResponseEntity.ok(history);
     }
 }

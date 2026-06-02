@@ -11,9 +11,11 @@
         <module name="fraud-service" />
         <module name="core-service" />
         <module name="commons" />
-        <module name="traceflow-spring-boot-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="traceflow-spring-boot-starter" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
