@@ -1,8 +1,8 @@
 package com.payflow.fraudservice.controller;
 
+import com.payflow.commons.dto.fraud.FraudAnalysisRequest;
+import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.fraudservice.Repository.FraudLogRepository;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisRequest;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisResponse;
 import com.payflow.fraudservice.model.FraudAnalysisLog;
 import com.payflow.fraudservice.service.FraudAnalysisService;
 import lombok.extern.slf4j.Slf4j;
