@@ -1,5 +1,6 @@
 package com.payflow.fraudservice.dto.payment;
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import java.math.BigDecimal;
 import java.util.UUID;
 

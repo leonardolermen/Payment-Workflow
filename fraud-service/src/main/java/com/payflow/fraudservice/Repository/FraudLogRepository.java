@@ -1,5 +1,5 @@
 package com.payflow.fraudservice.Repository;
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.fraudservice.model.FraudAnalysisLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
