@@ -26,7 +26,7 @@ public final class UserFactory {
                 .document(request.getDocument())
                 .documentType(request.getDocumentType().name())
                 .balance(request.getBalance() != null ? request.getBalance() : BigDecimal.ZERO)
-                .status(User_Status.ACTIVE)
+                .status(User_Status.UNDER_REVIEW)
                 .createdAt(LocalDateTime.now());
 
         if (customizer != null) {
