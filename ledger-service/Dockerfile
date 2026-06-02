@@ -1,12 +1,16 @@
 FROM golang:1.21-alpine AS builder
 
-WORKDIR /app
-# Copy the local SDK into the build context
-COPY sdks/sdk-go ./sdk-go
-COPY ledger-service ./ledger-service
-
 WORKDIR /app/ledger-service
-RUN go mod download
+
+COPY ledger-service/go.mod .
+
+# Let Go resolve all transitive dependencies automatically
+RUN go mod download || true
+
+COPY ledger-service/ .
+
+# go mod tidy will fix any missing/mismatched dependencies
+RUN go mod tidy
 RUN go build -o ledger-service main.go
 
 FROM alpine:latest

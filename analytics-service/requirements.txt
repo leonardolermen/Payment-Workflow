@@ -1,4 +1,5 @@
 fastapi==0.109.2
 uvicorn==0.27.1
 pydantic==2.6.1
-../sdks/sdk-python
+opentelemetry-distro==0.47b0
+opentelemetry-exporter-otlp==1.26.0

@@ -89,6 +89,10 @@ services:
     environment:
       - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
       - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://host.docker.internal:4317
+      - OTEL_EXPORTER_OTLP_HEADERS=x-api-key=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+      - OTEL_SERVICE_NAME=ledger-service
+      - OTEL_TRACES_EXPORTER=otlp
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -105,6 +109,7 @@ services:
     environment:
       - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
       - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+      - OTEL_SERVICE_NAME=notification-service
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -121,6 +126,11 @@ services:
     environment:
       - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
       - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://host.docker.internal:4317
+      - OTEL_EXPORTER_OTLP_HEADERS=x-api-key=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+      - OTEL_SERVICE_NAME=analytics-service
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
