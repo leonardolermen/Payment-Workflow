@@ -14,7 +14,11 @@ import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -29,7 +33,8 @@ import java.util.UUID;
 import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
 
 @Slf4j
-@Data
+@Getter
+@Setter
 @Service
 public class PaymentService {
 
@@ -198,11 +203,6 @@ public class PaymentService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 
-        if (payment.getStatus() != Enum_Payment.PENDING){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
-        }
-
         User payer = findUser(payment.getPayerId());
         if (payer.getBalance().compareTo(payment.getAmount()) < 0){
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
@@ -230,11 +230,6 @@ public class PaymentService {
         Payment payment = paymentRepository.findByUuid(paymentId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
-
-        if (payment.getStatus() != Enum_Payment.PENDING){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
-        }
 
         payment.setStatus(Enum_Payment.REJECTED);
         paymentRepository.save(payment);
