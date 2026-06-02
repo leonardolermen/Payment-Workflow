@@ -28,6 +28,13 @@ import java.util.UUID;
 
 import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
 
+import com.payflow.coreservice.client.LedgerClient;
+import com.payflow.coreservice.client.NotificationClient;
+import com.payflow.coreservice.client.AnalyticsClient;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @Data
 @Service
@@ -36,6 +43,9 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final AntiFraudClient antiFraudClient;
+    private final LedgerClient ledgerClient;
+    private final NotificationClient notificationClient;
+    private final AnalyticsClient analyticsClient;
     private final PaymentPersistenceHelper paymentPersistenceHelper;
     private final PaymentStatusHandlerFactory handlerFactory;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -43,11 +53,17 @@ public class PaymentService {
     public PaymentService(PaymentRepository paymentRepository,
                           UserRepository userRepository,
                           AntiFraudClient antiFraudClient,
+                          LedgerClient ledgerClient,
+                          NotificationClient notificationClient,
+                          AnalyticsClient analyticsClient,
                           PaymentPersistenceHelper paymentPersistenceHelper,
                           PaymentStatusHandlerFactory handlerFactory,
                           RedisTemplate<String, Object> redisTemplate) {
         this.userRepository = userRepository;
         this.antiFraudClient = antiFraudClient;
+        this.ledgerClient = ledgerClient;
+        this.notificationClient = notificationClient;
+        this.analyticsClient = analyticsClient;
         this.paymentPersistenceHelper = paymentPersistenceHelper;
         this.handlerFactory = handlerFactory;
         this.paymentRepository = paymentRepository;
@@ -111,6 +127,29 @@ public class PaymentService {
             PaymentStatusHandler handler = handlerFactory.getHandler(analysisResponse.getStatus());
             handler.handle(payment, analysisResponse);
 
+            // ==========================================
+            // Polyglot Tracing Tests (Go, Node, Python)
+            // ==========================================
+            try {
+                // 1. Call Ledger Service (Go)
+                Map<String, Object> req = new HashMap<>();
+                req.put("paymentId", payment.getUuid().toString());
+                req.put("amount", payment.getAmount());
+                req.put("status", payment.getStatus().name());
+                ledgerClient.recordPayment(req);
+
+                // 2. Call Notification Service (Node)
+                req.put("payeeId", payment.getPayeeId().toString());
+                notificationClient.sendNotification(req);
+
+                // 3. Call Analytics Service (Python)
+                req.put("payerId", payment.getPayerId().toString());
+                analyticsClient.trackPayment(req);
+                
+            } catch (Exception e) {
+                log.error("Failed to notify polyglot services: {}", e.getMessage());
+                // We don't fail the payment if auxiliary services fail
+            }
 
         } catch (ResponseStatusException ex) {
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);

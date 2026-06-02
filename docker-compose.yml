@@ -76,6 +76,54 @@ services:
       - payflow_net
     restart: unless-stopped
 
+  # 📚 Ledger Service (Go)
+  ledger-service:
+    build:
+      context: .
+      dockerfile: ledger-service/Dockerfile
+    container_name: payflow-ledger-service
+    ports:
+      - "8083:8083"
+    networks:
+      - payflow_net
+    environment:
+      - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
+      - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 🔔 Notification Service (Node.js)
+  notification-service:
+    build:
+      context: .
+      dockerfile: notification-service/Dockerfile
+    container_name: payflow-notification-service
+    ports:
+      - "8084:8084"
+    networks:
+      - payflow_net
+    environment:
+      - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
+      - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 📊 Analytics Service (Python)
+  analytics-service:
+    build:
+      context: .
+      dockerfile: analytics-service/Dockerfile
+    container_name: payflow-analytics-service
+    ports:
+      - "8085:8085"
+    networks:
+      - payflow_net
+    environment:
+      - TRACEFLOW_COLLECTOR_URL=http://host.docker.internal:4317
+      - TRACEFLOW_API_KEY=tf_live_759100f9-bb4d-4ed4-a8a5-a50e44fcf592
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 volumes:
   postgres_data:
 
