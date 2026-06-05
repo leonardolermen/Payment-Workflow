@@ -2,9 +2,13 @@ package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.enums.payment.Enum_Payment;
+import com.payflow.coreservice.enums.Enum_Transaction;
 import com.payflow.coreservice.model.Payment;
+import com.payflow.coreservice.model.Transaction;
 import com.payflow.coreservice.model.User;
+import com.payflow.coreservice.model.factory.TransactionFactory;
 import com.payflow.coreservice.repository.PaymentRepository;
+import com.payflow.coreservice.repository.TransactionRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
 import jakarta.transaction.Transactional;
@@ -19,6 +23,7 @@ public class ApprovedHandler implements PaymentStatusHandler {
 
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
 
     @Override
     @Transactional
@@ -32,6 +37,10 @@ public class ApprovedHandler implements PaymentStatusHandler {
             if(payer.getBalance().compareTo(payment.getAmount()) < 0){
                 payment.setStatus(Enum_Payment.FAILED);
                 paymentRepository.save(payment);
+
+                Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.FAILED, "Saldo insuficiente");
+                transactionRepository.save(transaction);
+
                 throw new RuntimeException("Saldo insuficiente");
             }
 
@@ -46,9 +55,16 @@ public class ApprovedHandler implements PaymentStatusHandler {
             payment.setStatus(Enum_Payment.SUCCESS);
             paymentRepository.save(payment);
 
+            Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.SUCCESS, "Aprovado");
+            transactionRepository.save(transaction);
+
         } catch (Exception e) {
             payment.setStatus(Enum_Payment.FAILED);
             paymentRepository.save(payment);
+
+            Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.FAILED, "Erro ao processar pagamento" + e.getMessage());
+            transactionRepository.save(transaction);
+
             throw new RuntimeException("Erro ao processar pagamento: " + e.getMessage(), e);
         }
 

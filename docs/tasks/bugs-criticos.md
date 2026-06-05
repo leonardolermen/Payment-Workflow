@@ -6,21 +6,28 @@ Bugs técnicos que precisam ser corrigidos com prioridade alta.
 
 ## 1.1 Entidade Transaction Incompleta
 
+### Status: ✅ CORRIGIDO
+
 ### Problema
 - 🐛 **Bug na migration V3**: colunas `payer_id` e `payee_id` existem no modelo Java mas **não foram adicionadas na tabela** `transactions` do script SQL
 - 🐛 **`paymentId` é `String`** no modelo mas deveria ser `UUID` para consistência
 - 🐛 **`@PrePersist` não seta `executedAt`** — campo `NOT NULL` no banco ficará nulo
 - 🐛 **`Transaction` nunca é persistida**: após SUCCESS ou FAILED, nenhum registro é gravado na tabela
 
-### Solução
-- [ ] **Criar migration `V8`** corrigindo a tabela `transactions`:
-  - Adicionar `payer_id UUID NOT NULL`
-  - Adicionar `payee_id UUID NOT NULL`
-  - Alterar `payment_id` para `UUID`
-- [ ] **Corrigir modelo Java** para alinhar com a migration corrigida
-- [ ] **Implementar persistência de Transaction** no fluxo de pagamento:
-  - No `PaymentService`, após marcar SUCCESS: criar registro `Transaction` com status SUCCESS, reason "Aprovado", payerId, payeeId, paymentId, executedAt
-  - Após marcar FAILED (fraude ou saldo): criar registro `Transaction` com status FAILED e reason descritivo
+### Solução Implementada
+- ✅ **Migration V8 criada** (`V8__update_transaction.sql`):
+  - Adicionou `payer_id UUID NOT NULL`
+  - Adicionou `payee_id UUID NOT NULL`
+  - Alterou `payment_id` para `UUID`
+- ✅ **Modelo Java corrigido**:
+  - `paymentId` alterado de `String` para `UUID`
+  - Adicionadas anotações `@Getter` e `@Setter`
+  - `@PrePersist` agora seta `executedAt` quando nulo
+- ✅ **Persistência de Transaction implementada**:
+  - `TransactionFactory` criado para padronizar criação de transações
+  - `ApprovedHandler` cria Transaction SUCCESS/FAILED conforme cenário
+  - `RejectedHandler` cria Transaction FAILED com motivo da rejeição
+  - `PaymentService` (approveManualPayment/rejectManualPayment) cria Transaction com motivos manuais
 
 ---
 

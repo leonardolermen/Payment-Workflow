@@ -15,14 +15,17 @@ Todas as funcionalidades já implementadas no ecossistema PayFlow.
   - Campos: `id` (Long PK auto), `uuid` (UUID), `payerId`, `payeeId`, `amount` (BigDecimal), `status` (PENDING/SUCCESS/FAILED/REJECTED), `idempotencyKey` (único), `createdAt`
   - `@PrePersist` gera UUID e seta `createdAt`
 
-- ✅ **Entidade Transaction** (modelo criado, mas não usada - ver bugs-criticos.md)
-  - Campos: `uuid`, `paymentId` (String), `status`, `reason`, `payerId`, `payeeId`, `executedAt`
+- ✅ **Entidade Transaction** com persistência completa
+  - Campos: `uuid`, `paymentId` (UUID), `status`, `reason`, `payerId`, `payeeId`, `executedAt`
+  - `TransactionFactory` para criação padronizada
+  - Persistência em ApprovedHandler, RejectedHandler e PaymentService
 
 ### Migrations
 - ✅ V1: tabela `users`
 - ✅ V2: tabela `payments`
-- ✅ V3: tabela `transactions` (incompleta — ver bugs-criticos.md)
+- ✅ V3: tabela `transactions` (corrigida na V8)
 - ✅ V4: remove constraints `UNIQUE` errôneas de `payer_id`/`payee_id` em `payments`
+- ✅ V8: corrige tabela `transactions` (adiciona payer_id, payee_id, altera payment_id para UUID)
 
 ### Repositórios
 - ✅ **UserRepository**: `findByEmail`, `findByDocument`, `findByUuid`
