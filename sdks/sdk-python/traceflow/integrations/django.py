@@ -1,14 +1,14 @@
 import json
-from .. import TraceFlow
+from .. import Tracer
 from ..propagation import extract_context
 from ..sanitize import sanitize
 
-class TraceFlowMiddleware:
+class TracerMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        tracer = TraceFlow.instance
+        tracer = Tracer.instance
         if not tracer:
             return self.get_response(request)
 
@@ -32,7 +32,7 @@ class TraceFlowMiddleware:
             }
         )
         
-        request.traceflow_span = span
+        request.tracer_span = span
         
         req_attrs = {
             "method": request.method,
@@ -53,7 +53,7 @@ class TraceFlowMiddleware:
             status = response.status_code
             span.set_tag("http.status_code", str(status))
             
-            response["x-traceflow-trace-id"] = span.trace_id
+            response["x-tracer-trace-id"] = span.trace_id
             
             res_attrs = {"status_code": str(status)}
             

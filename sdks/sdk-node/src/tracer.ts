@@ -1,4 +1,4 @@
-import { TraceFlowConfig, SpanOptions, SpanKind } from './types'
+import { TracerConfig, SpanOptions, SpanKind } from './types'
 import { Span } from './span'
 import { generateTraceId } from './id'
 import { HttpTransport } from './transport/http'
@@ -6,33 +6,33 @@ import { UdpTransport } from './transport/udp'
 
 type AnyTransport = { send(span: ReturnType<Span['toEvent']>): void | Promise<void> }
 
-export class Tracer {
-  private readonly config: Required<Pick<TraceFlowConfig, 'serviceName' | 'transport' | 'disabled'>> & {
+export class TracerClient {
+  private readonly config: Required<Pick<TracerConfig, 'serviceName' | 'transport' | 'disabled'>> & {
     workspaceId?: string
     apiKey?: string
   }
   private readonly transport: AnyTransport
 
-  constructor(config: TraceFlowConfig) {
+  constructor(config: TracerConfig) {
     const apiKey = config.apiKey
-      ?? (typeof process !== 'undefined' ? process.env.TRACEFLOW_API_KEY : undefined)
+      ?? (typeof process !== 'undefined' ? process.env.TRACER_API_KEY : undefined)
 
     // The collector derives the workspace from the api-key. workspaceId is only
     // a fallback for dev mode (collector running without api-key auth).
     const workspaceId = config.workspaceId
-      ?? (typeof process !== 'undefined' ? process.env.TRACEFLOW_WORKSPACE_ID : undefined)
+      ?? (typeof process !== 'undefined' ? process.env.TRACER_WORKSPACE_ID : undefined)
       ?? (apiKey ? undefined : 'ws_dev')
 
     const collectorUrl = config.collectorUrl
-      ?? (typeof process !== 'undefined' ? process.env.TRACEFLOW_COLLECTOR_URL : undefined)
+      ?? (typeof process !== 'undefined' ? process.env.TRACER_COLLECTOR_URL : undefined)
       ?? 'http://localhost:4317'
 
     const collectorHost = config.collectorHost
-      ?? (typeof process !== 'undefined' ? process.env.TRACEFLOW_COLLECTOR_HOST : undefined)
+      ?? (typeof process !== 'undefined' ? process.env.TRACER_COLLECTOR_HOST : undefined)
       ?? 'localhost'
 
     if (!apiKey && typeof console !== 'undefined') {
-      console.warn('[traceflow] no apiKey configured — set TRACEFLOW_API_KEY or pass apiKey. Falling back to dev mode.')
+      console.warn('[tracer] no apiKey configured — set TRACER_API_KEY or pass apiKey. Falling back to dev mode.')
     }
 
     this.config = {
@@ -104,7 +104,7 @@ export class Tracer {
     try {
       await this.transport.send(span.toEvent())
     } catch (err) {
-      console.error('[traceflow] failed to send span', err)
+      console.error('[tracer] failed to send span', err)
     }
   }
 

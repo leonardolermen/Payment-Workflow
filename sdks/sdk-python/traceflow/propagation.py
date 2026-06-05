@@ -12,8 +12,8 @@ def extract_context(headers: dict):
             return {"traceId": trace_id, "spanId": span_id}
             
     # Try custom headers
-    trace_id = headers.get("x-traceflow-trace-id") or headers.get("x-b3-traceid")
-    span_id = headers.get("x-traceflow-span-id") or headers.get("x-b3-spanid")
+    trace_id = headers.get("x-tracer-trace-id") or headers.get("x-b3-traceid")
+    span_id = headers.get("x-tracer-span-id") or headers.get("x-b3-spanid")
     
     if trace_id:
         return {"traceId": trace_id, "spanId": span_id}
@@ -21,6 +21,6 @@ def extract_context(headers: dict):
     return None
 
 def inject_headers(span, headers: dict):
-    headers["x-traceflow-trace-id"] = span.trace_id
-    headers["x-traceflow-span-id"] = span.id
+    headers["x-tracer-trace-id"] = span.trace_id
+    headers["x-tracer-span-id"] = span.id
     headers["traceparent"] = f"00-{span.trace_id}-{span.id}-01"

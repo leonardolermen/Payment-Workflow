@@ -12,9 +12,11 @@ import com.payflow.fraudservice.service.cache.TransactionHistoryCacheService;
 import com.payflow.fraudservice.service.rule.RiskResult;
 import com.payflow.fraudservice.service.rule.RiskRuleEngine;
 import com.payflow.fraudservice.service.rule.TransactionHistory;
+import com.traceflow.sdk.Tracer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Service
@@ -50,6 +52,28 @@ public class FraudAnalysisService {
         RiskResult result = riskRuleEngine.evaluate(payment, payer, payee, history);
         Status_Fraud status = determineStatus(result.score());
         String reason = determineReason(result.score(), result.triggeredRules());
+
+        if (status == Status_Fraud.REJECTED) {
+            Tracer.warn("fraud.rejected", Map.of(
+                    "paymentId",     request.getPaymentId().toString(),
+                    "payerId",       request.getPayerId().toString(),
+                    "score",         String.valueOf(result.score()),
+                    "triggeredRules", String.join(", ", result.triggeredRules())
+            ));
+        } else if (status == Status_Fraud.MANUAL_ANALYSIS) {
+            Tracer.warn("fraud.manual_analysis", Map.of(
+                    "paymentId",     request.getPaymentId().toString(),
+                    "payerId",       request.getPayerId().toString(),
+                    "score",         String.valueOf(result.score()),
+                    "triggeredRules", String.join(", ", result.triggeredRules())
+            ));
+        } else {
+            Tracer.log("fraud.approved", Map.of(
+                    "paymentId", request.getPaymentId().toString(),
+                    "payerId",   request.getPayerId().toString(),
+                    "score",     String.valueOf(result.score())
+            ));
+        }
 
         FraudAnalysisLog log = new FraudAnalysisLog();
         log.setPaymentId(request.getPaymentId());

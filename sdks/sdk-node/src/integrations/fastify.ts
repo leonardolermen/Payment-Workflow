@@ -1,4 +1,4 @@
-import { Tracer } from '../tracer'
+import { TracerClient } from '../tracer'
 import { extractContext } from '../propagation'
 import { generateTraceId } from '../id'
 
@@ -22,7 +22,7 @@ function sanitize(obj: unknown, maxDepth = 3): Record<string, string> {
   return result
 }
 
-export function fastifyTraceFlow(fastify: any, opts: { tracer: Tracer }, done: () => void) {
+export function fastifyTracer(fastify: any, opts: { tracer: TracerClient }, done: () => void) {
   const { tracer } = opts
   if (!tracer) {
     done()
@@ -46,7 +46,7 @@ export function fastifyTraceFlow(fastify: any, opts: { tracer: Tracer }, done: (
       },
     })
 
-    reply.header('x-traceflow-trace-id', span.traceId)
+    reply.header('x-tracer-trace-id', span.traceId)
     request.span = span
 
     next()

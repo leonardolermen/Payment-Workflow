@@ -33,7 +33,7 @@ export interface SpanEvent {
   api_key?: string
 }
 
-export interface TraceFlowConfig {
+export interface TracerConfig {
   serviceName: string
   /** Your workspace api-key (tf_live_...). The collector derives the workspace from it. */
   apiKey?: string

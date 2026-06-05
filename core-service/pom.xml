@@ -89,5 +89,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.traceflow</groupId>
+            <artifactId>traceflow-spring-boot-starter</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
     </dependencies>
 </project>

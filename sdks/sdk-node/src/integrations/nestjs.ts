@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { tap, catchError } from 'rxjs/operators'
-import { Tracer } from '../tracer'
+import { TracerClient } from '../tracer'
 import { extractContext } from '../propagation'
 import { generateTraceId } from '../id'
 
@@ -26,8 +26,8 @@ function sanitize(obj: unknown, maxDepth = 3): Record<string, string> {
 }
 
 @Injectable()
-export class TraceFlowInterceptor implements NestInterceptor {
-  constructor(private tracer: Tracer) {}
+export class TracerInterceptor implements NestInterceptor {
+  constructor(private tracer: TracerClient) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp()
@@ -55,9 +55,9 @@ export class TraceFlowInterceptor implements NestInterceptor {
     })
 
     if (response.setHeader) {
-      response.setHeader('x-traceflow-trace-id', span.traceId)
+      response.setHeader('x-tracer-trace-id', span.traceId)
     } else if (response.header) {
-      response.header('x-traceflow-trace-id', span.traceId)
+      response.header('x-tracer-trace-id', span.traceId)
     }
 
     const reqAttrs: Record<string, unknown> = {

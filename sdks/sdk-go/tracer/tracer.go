@@ -27,8 +27,8 @@ type LogEntry struct {
 	Attributes map[string]string `json:"attributes,omitempty"`
 }
 
-var collectorURL = os.Getenv("TRACEFLOW_COLLECTOR_URL")
-var apiKey = os.Getenv("TRACEFLOW_API_KEY")
+var collectorURL = os.Getenv("TRACER_COLLECTOR_URL")
+var apiKey = os.Getenv("TRACER_API_KEY")
 var httpClient = &http.Client{Timeout: 5 * time.Second}
 
 func SendSpan(span *SpanEvent) {

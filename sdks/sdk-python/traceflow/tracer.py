@@ -12,7 +12,7 @@ def generate_trace_id():
 def generate_span_id():
     return secrets.token_hex(8)
 
-class Tracer:
+class TracerClient:
     def __init__(self, service_name: str, api_key: str, collector_url: str):
         self.service_name = service_name
         self.transport = HttpTransport(collector_url, api_key)

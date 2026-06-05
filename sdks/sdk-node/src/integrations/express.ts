@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Tracer } from '../tracer'
+import { TracerClient } from '../tracer'
 import { extractContext, injectHeaders } from '../propagation'
 import { generateTraceId } from '../id'
 
@@ -23,7 +23,7 @@ function sanitize(obj: unknown, maxDepth = 3): Record<string, string> {
   return result
 }
 
-export function traceflowMiddleware(tracer: Tracer) {
+export function tracerMiddleware(tracer: TracerClient) {
   return function (req: Request, res: Response, next: NextFunction) {
     const incoming = extractContext(req.headers as Record<string, string>)
 
@@ -43,7 +43,7 @@ export function traceflowMiddleware(tracer: Tracer) {
       },
     })
 
-    res.setHeader('x-traceflow-trace-id', span.traceId)
+    res.setHeader('x-tracer-trace-id', span.traceId)
     ;(req as any).span = span
 
     // Log incoming request with sanitized body

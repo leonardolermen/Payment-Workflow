@@ -2,13 +2,13 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 import json
-from .. import TraceFlow
+from .. import Tracer
 from ..propagation import extract_context
 from ..sanitize import sanitize
 
-class TraceFlowMiddleware(BaseHTTPMiddleware):
+class TracerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        tracer = TraceFlow.instance
+        tracer = Tracer.instance
         if not tracer:
             return await call_next(request)
 
@@ -57,7 +57,7 @@ class TraceFlowMiddleware(BaseHTTPMiddleware):
             status = response.status_code
             span.set_tag("http.status_code", str(status))
             
-            response.headers["x-traceflow-trace-id"] = span.trace_id
+            response.headers["x-tracer-trace-id"] = span.trace_id
             
             res_attrs = {"status_code": str(status)}
             

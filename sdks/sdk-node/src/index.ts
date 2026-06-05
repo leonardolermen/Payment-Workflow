@@ -1,13 +1,13 @@
-export { Tracer } from './tracer'
+export { TracerClient } from './tracer'
 export { Span } from './span'
 
 export { injectHeaders, extractContext } from './propagation'
-export { traceflowMiddleware } from './integrations/express'
-export { fastifyTraceFlow } from './integrations/fastify'
-export { TraceFlowInterceptor } from './integrations/nestjs'
+export { tracerMiddleware } from './integrations/express'
+export { fastifyTracer } from './integrations/fastify'
+export { TracerInterceptor } from './integrations/nestjs'
 export { patchFetch } from './integrations/fetch'
 export type {
-  TraceFlowConfig,
+  TracerConfig,
   SpanOptions,
   SpanKind,
   SpanStatus,
@@ -16,19 +16,19 @@ export type {
   Transport,
 } from './types'
 
-import { Tracer } from './tracer'
-import { TraceFlowConfig } from './types'
+import { TracerClient } from './tracer'
+import { TracerConfig } from './types'
 
-let _instance: Tracer | null = null
+let _instance: TracerClient | null = null
 
-export const TraceFlow = {
-  init(config: TraceFlowConfig): Tracer {
-    _instance = new Tracer(config)
+export const Tracer = {
+  init(config: TracerConfig): TracerClient {
+    _instance = new TracerClient(config)
     return _instance
   },
 
-  get instance(): Tracer {
-    if (!_instance) throw new Error('[traceflow] Call TraceFlow.init() before using the SDK')
+  get instance(): TracerClient {
+    if (!_instance) throw new Error('[tracer] Call Tracer.init() before using the SDK')
     return _instance
   },
 }

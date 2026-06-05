@@ -1,12 +1,12 @@
 from flask import request, g
-from .. import TraceFlow
+from .. import Tracer
 from ..propagation import extract_context
 from ..sanitize import sanitize
 
-def TraceFlowFlask(app):
+def TracerFlask(app):
     @app.before_request
     def before_request():
-        tracer = TraceFlow.instance
+        tracer = Tracer.instance
         if not tracer:
             return
 
@@ -30,7 +30,7 @@ def TraceFlowFlask(app):
             }
         )
         
-        g.traceflow_span = span
+        g.tracer_span = span
         
         req_attrs = {
             "method": request.method,
@@ -57,14 +57,14 @@ def TraceFlowFlask(app):
 
     @app.after_request
     def after_request(response):
-        span = getattr(g, "traceflow_span", None)
+        span = getattr(g, "tracer_span", None)
         if not span:
             return response
             
         status = response.status_code
         span.set_tag("http.status_code", str(status))
         
-        response.headers["x-traceflow-trace-id"] = span.trace_id
+        response.headers["x-tracer-trace-id"] = span.trace_id
         
         res_attrs = {"status_code": str(status)}
         
@@ -93,7 +93,7 @@ def TraceFlowFlask(app):
 
     @app.teardown_request
     def teardown_request(exception):
-        span = getattr(g, "traceflow_span", None)
+        span = getattr(g, "tracer_span", None)
         if span and exception:
             span.set_error(exception)
             span.log("http.response", {"error": str(exception)}, "ERROR")

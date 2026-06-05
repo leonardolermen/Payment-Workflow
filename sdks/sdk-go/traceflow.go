@@ -5,7 +5,7 @@ import (
 	"github.com/traceflow/sdk-go/middleware"
 )
 
-// Middleware wraps net/http handlers to generate TraceFlow spans
+// Middleware wraps net/http handlers to generate Tracer spans
 func Middleware(next http.Handler) http.Handler {
 	return middleware.Middleware(next)
 }

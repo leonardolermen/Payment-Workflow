@@ -46,7 +46,7 @@ function req(method, url, body, token) {
       let data = ''
       res.on('data', d => data += d)
       res.on('end', () => {
-        const traceId = res.headers['x-traceflow-trace-id'] || null
+        const traceId = res.headers['x-tracer-trace-id'] || null
         try {
           resolve({ status: res.statusCode, body: JSON.parse(data), traceId })
         } catch {
@@ -141,7 +141,7 @@ async function getPaymentsByStatus(token, status) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log(c('bold', '\n🔬 PayFlow Test Suite — TraceFlow Observability Demo\n'))
+  console.log(c('bold', '\n🔬 PayFlow Test Suite — Tracer Observability Demo\n'))
   console.log(c('gray', `  Core:  ${BASE_URL}`))
   console.log(c('gray', `  Fraud: ${FRAUD_URL}`))
   console.log(c('gray', `  Dashboard: http://localhost:5173\n`))

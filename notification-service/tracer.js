@@ -8,8 +8,8 @@ const { BatchLogRecordProcessor } = require('@opentelemetry/sdk-logs');
 const { Resource } = require('@opentelemetry/resources');
 const { SEMRESATTRS_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
 
-const collectorUrl = process.env.TRACEFLOW_COLLECTOR_URL || 'http://localhost:4317';
-const apiKey = process.env.TRACEFLOW_API_KEY || '';
+const collectorUrl = process.env.TRACER_COLLECTOR_URL || 'http://localhost:4317';
+const apiKey = process.env.TRACER_API_KEY || '';
 const headers = apiKey ? { 'x-api-key': apiKey } : {};
 
 const sdk = new NodeSDK({
@@ -30,4 +30,4 @@ const sdk = new NodeSDK({
 });
 
 sdk.start();
-console.log('[TraceFlow] OpenTelemetry auto-instrumentation started');
+console.log('[Tracer] OpenTelemetry auto-instrumentation started');

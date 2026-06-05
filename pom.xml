@@ -33,7 +33,7 @@
   <repositories>
     <repository>
       <id>traceflow-pages</id>
-      <name>TraceFlow GitHub Pages</name>
+      <name>Tracer GitHub Pages</name>
       <url>https://leonardolermen.github.io/Tracer/</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>false</enabled></snapshots>

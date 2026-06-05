@@ -8,4 +8,4 @@ RUN npm install
 COPY notification-service/ .
 
 EXPOSE 8084
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

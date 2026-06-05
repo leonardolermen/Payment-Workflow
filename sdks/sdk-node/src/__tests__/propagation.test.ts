@@ -2,12 +2,12 @@ import { injectHeaders, extractContext } from '../propagation'
 
 describe('propagation', () => {
   describe('injectHeaders', () => {
-    it('injects x-traceflow headers', () => {
+    it('injects x-tracer headers', () => {
       const headers: Record<string, string> = {}
       injectHeaders({ traceId: 'trace_abc123', spanId: 'span_def456' }, headers)
 
-      expect(headers['x-traceflow-trace-id']).toBe('trace_abc123')
-      expect(headers['x-traceflow-span-id']).toBe('span_def456')
+      expect(headers['x-tracer-trace-id']).toBe('trace_abc123')
+      expect(headers['x-tracer-span-id']).toBe('span_def456')
     })
 
     it('injects W3C traceparent header', () => {
@@ -19,10 +19,10 @@ describe('propagation', () => {
   })
 
   describe('extractContext', () => {
-    it('extracts from x-traceflow headers (priority)', () => {
+    it('extracts from x-tracer headers (priority)', () => {
       const ctx = extractContext({
-        'x-traceflow-trace-id': 'trace_abc123',
-        'x-traceflow-span-id': 'span_def456',
+        'x-tracer-trace-id': 'trace_abc123',
+        'x-tracer-span-id': 'span_def456',
       })
 
       expect(ctx).not.toBeNull()

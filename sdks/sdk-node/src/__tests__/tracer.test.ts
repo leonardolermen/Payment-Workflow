@@ -1,4 +1,4 @@
-import { Tracer } from '../tracer'
+import { TracerClient } from '../tracer'
 import { Span } from '../span'
 
 const mockSend = jest.fn().mockResolvedValue(undefined)
@@ -12,7 +12,7 @@ jest.mock('../transport/udp', () => ({
 }))
 
 function makeTracer(overrides = {}) {
-  return new Tracer({
+  return new TracerClient({
     serviceName: 'test-svc',
     workspaceId: 'ws_test',
     collectorUrl: 'http://localhost:4317',
@@ -20,7 +20,7 @@ function makeTracer(overrides = {}) {
   })
 }
 
-describe('Tracer', () => {
+describe('TracerClient', () => {
   beforeEach(() => mockSend.mockClear())
 
   it('startSpan returns a Span instance', () => {
@@ -92,7 +92,7 @@ describe('Tracer', () => {
   })
 
   it('omits workspace_id when only an apiKey is configured', async () => {
-    const tracer = new Tracer({
+    const tracer = new TracerClient({
       serviceName: 'test-svc',
       apiKey: 'tf_live_abc',
       collectorUrl: 'http://localhost:4317',

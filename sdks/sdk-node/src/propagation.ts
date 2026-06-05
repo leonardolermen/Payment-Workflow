@@ -5,13 +5,13 @@ export interface TraceContext {
 
 export function injectHeaders(ctx: TraceContext, headers: Record<string, string>): void {
   headers['traceparent'] = `00-${ctx.traceId.replace('trace_', '').padStart(32, '0')}-${ctx.spanId.replace('span_', '').padStart(16, '0')}-01`
-  headers['x-traceflow-trace-id'] = ctx.traceId
-  headers['x-traceflow-span-id'] = ctx.spanId
+  headers['x-tracer-trace-id'] = ctx.traceId
+  headers['x-tracer-span-id'] = ctx.spanId
 }
 
 export function extractContext(headers: Record<string, string | string[] | undefined>): TraceContext | null {
-  const xTraceId = header(headers, 'x-traceflow-trace-id')
-  const xSpanId = header(headers, 'x-traceflow-span-id')
+  const xTraceId = header(headers, 'x-tracer-trace-id')
+  const xSpanId = header(headers, 'x-tracer-span-id')
   if (xTraceId && xSpanId) {
     return { traceId: xTraceId, spanId: xSpanId }
   }

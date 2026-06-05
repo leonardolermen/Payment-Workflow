@@ -1,19 +1,13 @@
 {
   "name": "notification-service",
   "version": "1.0.0",
-  "description": "Notification service",
+  "description": "Notification service — Tracer SDK",
   "main": "index.js",
   "scripts": {
-    "start": "node --require ./tracer.js index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.19.0",
-    "@opentelemetry/sdk-node": "^0.52.1",
-    "@opentelemetry/auto-instrumentations-node": "^0.48.0",
-    "@opentelemetry/exporter-trace-otlp-http": "^0.52.1",
-    "@opentelemetry/exporter-logs-otlp-http": "^0.52.1",
-    "@opentelemetry/sdk-logs": "^0.52.1",
-    "@opentelemetry/resources": "^1.25.1",
-    "@opentelemetry/semantic-conventions": "^1.25.1"
+    "winston": "^3.13.0"
   }
 }

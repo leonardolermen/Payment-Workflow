@@ -1,7 +1,7 @@
-import { Tracer } from '../tracer'
+import { TracerClient } from '../tracer'
 import { injectHeaders } from '../propagation'
 
-export function patchFetch(tracer: Tracer): void {
+export function patchFetch(tracer: TracerClient): void {
   const originalFetch = globalThis.fetch
 
   globalThis.fetch = async function (

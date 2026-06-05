@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class TraceFlowLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
+public class TracerLogAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
     private String collectorUrl = "http://localhost:4317";
     private String workspaceId = "ws_dev";
     private HttpClient httpClient;

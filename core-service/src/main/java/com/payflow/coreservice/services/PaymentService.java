@@ -32,6 +32,7 @@ import com.payflow.coreservice.client.LedgerClient;
 import com.payflow.coreservice.client.NotificationClient;
 import com.payflow.coreservice.client.AnalyticsClient;
 
+import com.traceflow.sdk.Tracer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,6 +111,13 @@ public class PaymentService {
 
         Payment payment = PaymentFactory.fromRequest(request, Enum_Payment.PENDING);
 
+        Tracer.log("payment.initiated", Map.of(
+                "payerId",  request.getPayerId().toString(),
+                "payeeId",  request.getPayeeId().toString(),
+                "amount",   request.getAmount().toString(),
+                "currency", "BRL"
+        ));
+
         // Persiste em transação separada (REQUIRES_NEW) para que o fraud-service
         // consiga enxergar o registro quando fizer GET /payments/{id}.
         payment = paymentPersistenceHelper.saveInNewTx(payment);
@@ -126,6 +134,13 @@ public class PaymentService {
 
             PaymentStatusHandler handler = handlerFactory.getHandler(analysisResponse.getStatus());
             handler.handle(payment, analysisResponse);
+
+            Tracer.log("payment.fraud_result", Map.of(
+                    "paymentId",   payment.getUuid().toString(),
+                    "fraudStatus", analysisResponse.getStatus().name(),
+                    "fraudScore",  String.valueOf(analysisResponse.getScore()),
+                    "reason",      analysisResponse.getReason() != null ? analysisResponse.getReason() : ""
+            ));
 
             // ==========================================
             // Polyglot Tracing Tests (Go, Node, Python)
@@ -153,8 +168,18 @@ public class PaymentService {
 
         } catch (ResponseStatusException ex) {
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
+            Tracer.error("payment.failed", Map.of(
+                    "paymentId", payment.getUuid().toString(),
+                    "reason",    ex.getReason() != null ? ex.getReason() : ex.getMessage()
+            ));
             throw ex;
         }
+
+        Tracer.log("payment.completed", Map.of(
+                "paymentId", payment.getUuid().toString(),
+                "status",    payment.getStatus().name(),
+                "amount",    payment.getAmount().toString()
+        ));
 
         PaymentResponse response =
                 PaymentResponseFactory.fromPayment(payment);
@@ -259,6 +284,10 @@ public class PaymentService {
         payment.setStatus(Enum_Payment.SUCCESS);
         paymentRepository.save(payment);
 
+        Tracer.log("payment.manual_approved", Map.of(
+                "paymentId", paymentId.toString(),
+                "reason",    reason != null ? reason : ""
+        ));
         log.info("Pagamento aprovado com sucesso: PaymentId={}" ,paymentId);
     }
 
@@ -278,6 +307,10 @@ public class PaymentService {
         payment.setStatus(Enum_Payment.REJECTED);
         paymentRepository.save(payment);
 
+        Tracer.warn("payment.manual_rejected", Map.of(
+                "paymentId", paymentId.toString(),
+                "reason",    reason != null ? reason : ""
+        ));
         log.info("Pagamento rejeitado: PaymentId={}" ,paymentId);
     }
 }

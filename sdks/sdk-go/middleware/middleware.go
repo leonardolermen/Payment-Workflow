@@ -54,8 +54,8 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		traceID := r.Header.Get("x-traceflow-trace-id")
-		spanID := r.Header.Get("x-traceflow-span-id")
+		traceID := r.Header.Get("x-tracer-trace-id")
+		spanID := r.Header.Get("x-tracer-span-id")
 
 		if traceID == "" {
 			traceparent := r.Header.Get("traceparent")
@@ -112,7 +112,7 @@ func Middleware(next http.Handler) http.Handler {
 			body:           &bytes.Buffer{},
 		}
 		
-		w.Header().Set("x-traceflow-trace-id", span.TraceID)
+		w.Header().Set("x-tracer-trace-id", span.TraceID)
 
 		next.ServeHTTP(rw, r)
 
