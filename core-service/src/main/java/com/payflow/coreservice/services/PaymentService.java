@@ -8,13 +8,18 @@ import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.builder.AnalysisRequestBuilder;
 import com.payflow.coreservice.client.AntiFraudClient;
 import com.payflow.coreservice.dto.factory.PaymentResponseFactory;
+import com.payflow.coreservice.enums.Enum_Transaction;
 import com.payflow.coreservice.model.Payment;
+import com.payflow.coreservice.model.Transaction;
 import com.payflow.coreservice.model.factory.PaymentFactory;
 import com.payflow.coreservice.model.User;
+import com.payflow.coreservice.model.factory.TransactionFactory;
 import com.payflow.coreservice.repository.PaymentRepository;
+import com.payflow.coreservice.repository.TransactionRepository;
 import com.payflow.coreservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -29,7 +34,8 @@ import java.util.UUID;
 import static com.payflow.commons.enums.fraud.Status_Fraud.REJECTED;
 
 @Slf4j
-@Data
+@Getter
+@Setter
 @Service
 public class PaymentService {
 
@@ -39,21 +45,29 @@ public class PaymentService {
     private final PaymentPersistenceHelper paymentPersistenceHelper;
     private final PaymentStatusHandlerFactory handlerFactory;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final TransactionRepository transactionRepository;
 
     public PaymentService(PaymentRepository paymentRepository,
                           UserRepository userRepository,
                           AntiFraudClient antiFraudClient,
                           PaymentPersistenceHelper paymentPersistenceHelper,
                           PaymentStatusHandlerFactory handlerFactory,
-                          RedisTemplate<String, Object> redisTemplate) {
+                          RedisTemplate<String, Object> redisTemplate,
+                          TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
         this.antiFraudClient = antiFraudClient;
         this.paymentPersistenceHelper = paymentPersistenceHelper;
         this.handlerFactory = handlerFactory;
         this.paymentRepository = paymentRepository;
         this.redisTemplate = redisTemplate;
+        this.transactionRepository = transactionRepository;
     }
 
+
+    private void createTransaction(Payment payment, Enum_Transaction status, String reason){
+        Transaction transaction = TransactionFactory.fromPayment(payment, status, reason);
+        transactionRepository.save(transaction);
+    }
     // =========================
     // CREATE PAYMENT
     // =========================
@@ -198,14 +212,12 @@ public class PaymentService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 
-        if (payment.getStatus() != Enum_Payment.PENDING){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
-        }
-
         User payer = findUser(payment.getPayerId());
         if (payer.getBalance().compareTo(payment.getAmount()) < 0){
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
+
+            createTransaction(payment, Enum_Transaction.FAILED, "Saldo insuficiente");
+
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, "Saldo insuficiente");
         }
@@ -220,6 +232,8 @@ public class PaymentService {
         payment.setStatus(Enum_Payment.SUCCESS);
         paymentRepository.save(payment);
 
+        createTransaction(payment, Enum_Transaction.SUCCESS, "Aprovado manualmente: " + reason);
+
         log.info("Pagamento aprovado com sucesso: PaymentId={}" ,paymentId);
     }
 
@@ -231,13 +245,10 @@ public class PaymentService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 
-        if (payment.getStatus() != Enum_Payment.PENDING){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING");
-        }
-
         payment.setStatus(Enum_Payment.REJECTED);
         paymentRepository.save(payment);
+
+        createTransaction(payment, Enum_Transaction.FAILED, "Rejeitado manualmente: " + reason);
 
         log.info("Pagamento rejeitado: PaymentId={}" ,paymentId);
     }

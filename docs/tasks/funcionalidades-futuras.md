@@ -6,7 +6,11 @@ Funcionalidades planejadas para implementação futura (prioridade baixa).
 
 ## 4.1 Kafka - Event-Driven Architecture
 
-- [ ] Criar `KafkaTopicsConfig.java` com beans `NewTopic`
+### Status: ⚠️ PARCIALMENTE IMPLEMENTADO
+
+- [x] Criar `KafkaTopicsConfig.java` com beans `NewTopic` (8 tópicos configurados)
+- [x] Criar `FraudEventProducer` no fraud-service
+- [x] Criar `PaymentAlertEvent` DTO no commons
 - [ ] Criar `PaymentEventProducer` no core-service
 - [ ] Criar `PaymentEvent` DTO no commons
 - [ ] Refatorar `POST /payments` para assíncrono (PROCESSING + Kafka)
@@ -14,21 +18,37 @@ Funcionalidades planejadas para implementação futura (prioridade baixa).
 - [ ] Criar `FraudResultProducer` no fraud-service
 - [ ] Criar `FraudCompletedConsumer` no core-service
 
+**Tópicos Kafka Implementados:**
+- payflow.payment.requested
+- payflow.fraud.completed
+- payflow.payment.alerts
+- payflow.transaction.completed
+- payflow.review.completed
+- payflow.payment.alerts.dlq
+- payflow.review.completed.dlq
+- payflow.manual.decision
+- payflow.manual.decision.dlq
+
 ---
 
 ## 4.2 Notificações
 
-- [ ] Criar `TransactionCompletedConsumer`
+### Status: ⚠️ PARCIALMENTE IMPLEMENTADO
+
+- [x] Criar `AlertConsumerService` para processar alertas
+- [x] Criar `ManualDecisionConsumerService` para processar decisões manuais
+- [x] Implementar Dead Letter Topic (DLQ) para falhas
+- [x] Implementar retry com backoff configurado no KafkaConfig
 - [ ] Implementar webhook simulado
 - [ ] Implementar e-mail simulado (log)
 - [ ] Adicionar container Mailhog no docker-compose
-- [ ] Implementar retry com Spring Retry
-- [ ] Implementar Dead Letter Topic
 - [ ] Criar endpoint `POST /admin/dlq/replay`
 
 ---
 
 ## 4.3 Testes
+
+### Status: ❌ NÃO IMPLEMENTADO
 
 - [ ] `PaymentServiceTest` com JUnit 5 + Mockito
   - Cenário: idempotência detectada → deve lançar `409 CONFLICT`
@@ -48,6 +68,8 @@ Funcionalidades planejadas para implementação futura (prioridade baixa).
 
 ## 4.4 Documentação de API
 
+### Status: ❌ NÃO IMPLEMENTADO
+
 - [ ] Adicionar SpringDoc OpenAPI (`springdoc-openapi-starter-webmvc-ui`)
 - [ ] Acessível em `/swagger-ui.html` de cada serviço
 - [ ] Anotar controllers com `@Operation`, `@ApiResponse`
@@ -57,7 +79,11 @@ Funcionalidades planejadas para implementação futura (prioridade baixa).
 
 ## 4.5 Observabilidade
 
-- [ ] Adicionar `spring-boot-starter-actuator`
+### Status: ⚠️ PARCIALMENTE IMPLEMENTADO
+
+- [x] Adicionar `spring-boot-starter-actuator` (dependência adicionada)
+- [x] Adicionar `micrometer-tracing-bridge-otel` para tracing distribuído
+- [x] Adicionar `opentelemetry-exporter-otlp` para exportação de métricas
 - [ ] Expor `/actuator/health` em ambos os serviços
 - [ ] Adicionar `micrometer-registry-prometheus` para métricas
 - [ ] Adicionar container Prometheus + Grafana no docker-compose
@@ -67,6 +93,11 @@ Funcionalidades planejadas para implementação futura (prioridade baixa).
 
 ## 4.6 Listagens com Paginação
 
+### Status: ⚠️ PARCIALMENTE IMPLEMENTADO
+
+- [x] Adicionar `GET /payments` com listagem completa
+- [x] Adicionar `GET /payments/users/{userId}` com listagem por usuário
+- [x] Adicionar `GET /payments/status/{status}` com listagem por status
 - [ ] Adicionar `GET /payments` com `Pageable`
 - [ ] Adicionar `GET /users` com `Pageable`
 - [ ] Adicionar `findByStatus` no `PaymentRepository`

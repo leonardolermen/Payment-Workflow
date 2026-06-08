@@ -1,21 +1,23 @@
 package com.payflow.fraudservice.service;
 
+import com.payflow.commons.dto.fraud.FraudAnalysisRequest;
+import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
 import com.payflow.commons.dto.payment.PaymentResponse;
 import com.payflow.commons.dto.user.UserResponse;
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.fraudservice.Repository.FraudLogRepository;
+import com.payflow.fraudservice.builder.FraudAnalysisLogBuilder;
+import com.payflow.fraudservice.builder.FraudAnalysisResponseBuilder;
 import com.payflow.fraudservice.client.CoreServiceClient;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisRequest;
-import com.payflow.fraudservice.dto.fraud.FraudAnalysisResponse;
 import com.payflow.fraudservice.model.FraudAnalysisLog;
 import com.payflow.fraudservice.service.cache.TransactionHistoryCacheService;
 import com.payflow.fraudservice.service.rule.RiskResult;
 import com.payflow.fraudservice.service.rule.RiskRuleEngine;
 import com.payflow.fraudservice.service.rule.TransactionHistory;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.StringJoiner;
+
 
 @Service
 public class FraudAnalysisService {
@@ -42,6 +44,13 @@ public class FraudAnalysisService {
         UserResponse payer = coreServiceClient.getUserById(request.getPayerId());
         UserResponse payee = coreServiceClient.getUserById(request.getPayeeId());
 
+        if(payer.getBalance() != null && payer.getBalance().compareTo(BigDecimal.ZERO)< 0){
+            FraudAnalysisLog log = FraudAnalysisLogBuilder.buildInsufficientBalance(request.getPaymentId());
+            fraudLogRepository.save(log);
+
+            return FraudAnalysisResponseBuilder.fromInsufficientBalance(request.getPaymentId());
+        }
+
         TransactionHistory history = new TransactionHistory(
                 request.getPayerId(),
                 historyCacheService.getUserTransactions(request.getPayerId())
@@ -51,21 +60,12 @@ public class FraudAnalysisService {
         Status_Fraud status = determineStatus(result.score());
         String reason = determineReason(result.score(), result.triggeredRules());
 
-        FraudAnalysisLog log = new FraudAnalysisLog();
-        log.setPaymentId(request.getPaymentId());
-        log.setScore((double) result.score());
-        log.setStatus(status);
-        log.setReason(reason);
-        log.setEvaluatedAt(LocalDateTime.now());
+        FraudAnalysisLog log = FraudAnalysisLogBuilder.build(request.getPaymentId(), result.score(), status, reason);
         fraudLogRepository.save(log);
 
         historyCacheService.addTransaction(request.getPayerId(), request.getPaymentId(), request.getPayeeId(), payment.getAmount());
 
-        return FraudAnalysisResponse.builder()
-                .status(status)
-                .score((double) result.score())
-                .reason(reason)
-                .build();
+        return FraudAnalysisResponseBuilder.fromAnalysis(status, result.score(), reason, request.getPaymentId());
     }
 
     private Status_Fraud determineStatus(double score) {

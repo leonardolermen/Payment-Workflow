@@ -1,7 +1,7 @@
 package com.payflow.fraudservice.service;
 
 import com.payflow.commons.dto.alert.ManualReviewDecision;
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.fraudservice.Repository.FraudLogRepository;
 import com.payflow.fraudservice.builder.DecisionEventBuilder;
 import com.payflow.fraudservice.model.FraudAnalysisLog;

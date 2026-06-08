@@ -1,5 +1,5 @@
 package com.payflow.fraudservice.model;
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,12 +9,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table (name = "fraud_analysis_logs")
 public class FraudAnalysisLog {
