@@ -8,6 +8,7 @@ import com.payflow.coreservice.model.Transaction;
 import com.payflow.coreservice.model.factory.TransactionFactory;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.TransactionRepository;
+import com.payflow.coreservice.services.WebhookService;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class RejectedHandler implements PaymentStatusHandler {
     private static final Logger logger = LoggerFactory.getLogger(RejectedHandler.class);
     private final PaymentRepository paymentRepository;
     private final TransactionRepository transactionRepository;
+    private final WebhookService webhookService;
 
     @Override
     @Transactional
@@ -31,6 +33,14 @@ public class RejectedHandler implements PaymentStatusHandler {
 
         Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.FAILED,  "Rejeitado pelo anti-fraude: " + response.getStatus());
         transactionRepository.save(transaction);
+
+        webhookService.sendClientNotificationRejected(
+                payment.getUuid(),
+                payment.getPayerId(),
+                payment.getPayeeId(),
+                payment.getAmount(),
+                response.getReason() != null ? response.getReason() : "Pagamento rejeitado automaticamente"
+        );
 
         logger.info("Pagamento rejeitado pelo anti-fraude: " +
                         "UUID: {}, Payer: {}, Payee: {}, Amount: {}, Status: {}",
