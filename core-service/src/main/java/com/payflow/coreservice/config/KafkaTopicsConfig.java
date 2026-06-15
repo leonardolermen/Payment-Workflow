@@ -78,4 +78,14 @@ public class KafkaTopicsConfig {
                 .build();
     }
 
+    public NewTopic manualDecisionTopic(){
+        return TopicBuilder.name("payflow.manual.decision")
+                .partitions(3).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic manualDecisionDLQ(){
+        return TopicBuilder.name("payflow.manual.decision.dlq")
+                .partitions(3).replicas(1).build();
+    }
 }
