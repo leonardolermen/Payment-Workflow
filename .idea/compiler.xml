@@ -7,10 +7,18 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for payment-workflow" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
         <module name="api-gateway" />
         <module name="fraud-service" />
-        <module name="core-service" />
         <module name="commons" />
+        <module name="core-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +31,7 @@
       <module name="commons" options="-parameters" />
       <module name="core-service" options="-parameters" />
       <module name="fraud-service" options="-parameters" />
+      <module name="payment-workflow" options="-parameters" />
       <module name="traceflow-spring-boot-starter" options="-parameters" />
     </option>
   </component>
