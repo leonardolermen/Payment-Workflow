@@ -40,30 +40,25 @@ public class KafkaTopicsConfig {
 
     @Bean
     public NewTopic paymentAlertsDLQ(){
-        return TopicBuilder.name("payflow.payment.alerts.dlt")
+        return TopicBuilder.name("payflow.payment.alerts.dlq")
                 .partitions(1).replicas(1).build();
     }
 
     @Bean
     public NewTopic reviewCompletedDLQ(){
-        return TopicBuilder.name("payflow.review.completed.dlt")
+        return TopicBuilder.name("payflow.review.completed.dlq")
                 .partitions(1).replicas(1).build();
     }
 
     @Bean
-    public NewTopic userCreatedTopic() {
-        return TopicBuilder.name("payflow.user.created")
-                .partitions(3)
-                .replicas(1)
-                .build();
+    public NewTopic manualDecisionTopic(){
+        return TopicBuilder.name("payflow.manual.decision")
+                .partitions(3).replicas(1).build();
     }
 
     @Bean
-    public NewTopic userKycResultTopic() {
-        return TopicBuilder.name("payflow.user.kyc.result")
-                .partitions(3)
-                .replicas(1)
-                .build();
+    public NewTopic manualDecisionDLQ(){
+        return TopicBuilder.name("payflow.manual.decision.dlq")
+                .partitions(3).replicas(1).build();
     }
-
 }

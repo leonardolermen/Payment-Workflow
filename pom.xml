@@ -19,7 +19,6 @@
   
   <modules>
     <module>commons</module>
-    <module>traceflow-spring-boot-starter</module>
     <module>api-gateway</module>
     <module>core-service</module>
     <module>fraud-service</module>
@@ -30,6 +29,16 @@
     <spring-cloud.version>2023.0.0</spring-cloud.version>
     <lombok.version>1.18.30</lombok.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>traceflow-pages</id>
+      <name>TraceFlow GitHub Pages</name>
+      <url>https://leonardolermen.github.io/Tracer/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+  </repositories>
 
   <dependencyManagement>
     <dependencies>

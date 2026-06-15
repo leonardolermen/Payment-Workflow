@@ -18,9 +18,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.payflow</groupId>
+            <groupId>com.traceflow</groupId>
             <artifactId>traceflow-spring-boot-starter</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

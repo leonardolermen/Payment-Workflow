@@ -1,6 +1,6 @@
 package com.payflow.fraudservice.dto.fraud;
 
-import com.payflow.fraudservice.Enums.fraud.Status_Fraud;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
