@@ -51,6 +51,21 @@ public class KafkaTopicsConfig {
     }
 
     @Bean
+    public NewTopic userCreatedTopic() {
+        return TopicBuilder.name("payflow.user.created")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic userKycResultTopic() {
+        return TopicBuilder.name("payflow.user.kyc.result")
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+
     public NewTopic manualDecisionTopic(){
         return TopicBuilder.name("payflow.manual.decision")
                 .partitions(3).replicas(1).build();
