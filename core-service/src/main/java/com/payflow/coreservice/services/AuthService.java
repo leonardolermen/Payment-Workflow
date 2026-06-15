@@ -6,6 +6,7 @@ import com.payflow.coreservice.exception.EmailAlreadyExistsException;
 import com.payflow.coreservice.exception.UserNotFoundException;
 import com.payflow.coreservice.model.User;
 import com.payflow.coreservice.model.factory.UserFactory;
+import com.payflow.coreservice.producer.UserCreatedProducer;
 import com.payflow.coreservice.repository.UserRepository;
 import com.payflow.coreservice.security.UserDetailsServiceImpl;
 import com.payflow.coreservice.dto.factory.AuthResponseFactory;
@@ -38,6 +39,9 @@ public class AuthService {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private UserCreatedProducer userCreatedProducer;
+
     /**
      * Registers a new user.
      *
@@ -57,6 +61,8 @@ public class AuthService {
         User user = UserFactory.fromRegisterRequest(request, encodedPassword);
 
         User savedUser = userRepository.save(user);
+
+        userCreatedProducer.publish(savedUser);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         String token = jwtService.generateToken(userDetails);
