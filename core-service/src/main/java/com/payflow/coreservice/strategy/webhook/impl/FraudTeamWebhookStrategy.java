@@ -19,7 +19,7 @@ public class FraudTeamWebhookStrategy implements WebhookStrategy {
     private final HmacSignatureService hmacSignatureService;
     private final RestTemplate restTemplate;
 
-    @Value("${WEBHOOK_URL_FRAUD_TEAM}")
+    @Value("${webhook.url.fraud-team}")
     private String webhookUrl;
 
     public FraudTeamWebhookStrategy(HmacSignatureService hmacSignatureService){

@@ -89,3 +89,11 @@ traceflow:
   capture-http-body: true
   redact-sensitive-fields: true
   enabled: true
+
+webhook:
+  hmac:
+    secret: ${WEBHOOK_HMAC_SECRET:h65t07tCISRgoq/H1Oh5a7gdY9u0JVUgzx4YvuvSLxUTKlawIgeF7irAo/CsWHsKJ5GKyVFSt3I5yC5uyxAqzg==}
+  url:
+    fraud-team: ${WEBHOOK_URL_FRAUD_TEAM:https://webhook.site/5996416c-9ae7-4b73-99ee-b08e58d8333f}
+    manual-decision-team: ${WEBHOOK_URL_MANUAL_DECISION_TEAM:https://webhook.site/5996416c-9ae7-4b73-99ee-b08e58d8333f}
+    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:https://webhook.site/5996416c-9ae7-4b73-99ee-b08e58d8333f}

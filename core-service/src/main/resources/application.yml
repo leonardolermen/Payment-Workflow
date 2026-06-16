@@ -94,6 +94,8 @@ webhook:
   hmac:
     secret: ${WEBHOOK_HMAC_SECRET:h65t07tCISRgoq/H1Oh5a7gdY9u0JVUgzx4YvuvSLxUTKlawIgeF7irAo/CsWHsKJ5GKyVFSt3I5yC5uyxAqzg==}
   url:
-    fraud-team: ${WEBHOOK_URL_FRAUD_TEAM:http://localhost:8080/api/fraud-team/webhook}
-    manual-decision-team: ${WEBHOOK_URL_MANUAL_DECISION_TEAM:http://localhost:8080/api/manual-decision-team/webhook}
-    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:http://localhost:8080/api/client/webhook}
+    #Colocar os links pegos no webhook.site todas as vezes que fechar e for abrir para testar
+    #Vai colocar o link na frente dos dois pontos que estçao abaixo, exemplo: ${WEBHOOK_URL_FRAUD_TEAM:https://webhook.site/ e o resto do link
+    fraud-team: ${WEBHOOK_URL_FRAUD_TEAM:}
+    manual-decision-team: ${WEBHOOK_URL_MANUAL_DECISION_TEAM:}
+    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:}

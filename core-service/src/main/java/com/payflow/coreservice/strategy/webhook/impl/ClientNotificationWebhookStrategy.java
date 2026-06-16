@@ -19,7 +19,7 @@ public class ClientNotificationWebhookStrategy implements WebhookStrategy {
     private final HmacSignatureService hmacSignatureService;
     private final RestTemplate restTemplate;
 
-    @Value("${WEBHOOK_URL_CLIENT_NOTIFICATION}")
+    @Value("${webhook.url.client-notification}")
     private String webhookUrl;
 
     public ClientNotificationWebhookStrategy(HmacSignatureService hmacSignatureService){

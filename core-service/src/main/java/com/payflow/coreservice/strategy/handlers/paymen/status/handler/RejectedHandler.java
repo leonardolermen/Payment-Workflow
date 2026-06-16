@@ -1,6 +1,7 @@
 package com.payflow.coreservice.strategy.handlers.paymen.status.handler;
 
 import com.payflow.commons.dto.fraud.FraudAnalysisResponse;
+import com.payflow.commons.enums.fraud.Status_Fraud;
 import com.payflow.commons.enums.payment.Enum_Payment;
 import com.payflow.coreservice.enums.Enum_Transaction;
 import com.payflow.coreservice.model.Payment;
@@ -28,10 +29,10 @@ public class RejectedHandler implements PaymentStatusHandler {
     @Override
     @Transactional
     public void handle(Payment payment, FraudAnalysisResponse response){
-        payment.setStatus(Enum_Payment.FAILED);
+        payment.setStatus(Enum_Payment.REJECTED);
         paymentRepository.save(payment);
 
-        Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.FAILED,  "Rejeitado pelo anti-fraude: " + response.getStatus());
+        Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.REJECTED,  "Rejeitado pelo anti-fraude: " + response.getStatus());
         transactionRepository.save(transaction);
 
         webhookService.sendClientNotificationRejected(
@@ -41,6 +42,8 @@ public class RejectedHandler implements PaymentStatusHandler {
                 payment.getAmount(),
                 response.getReason() != null ? response.getReason() : "Pagamento rejeitado automaticamente"
         );
+
+
 
         logger.info("Pagamento rejeitado pelo anti-fraude: " +
                         "UUID: {}, Payer: {}, Payee: {}, Amount: {}, Status: {}",

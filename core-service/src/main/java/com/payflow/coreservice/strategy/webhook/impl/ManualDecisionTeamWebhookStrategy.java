@@ -19,7 +19,7 @@ public class ManualDecisionTeamWebhookStrategy implements WebhookStrategy {
     private final HmacSignatureService hmacSignatureService;
     private final RestTemplate restTemplate;
 
-    @Value("${WEBHOOK_URL_MANUAL_DECISION_TEAM}")
+    @Value("${webhook.url.manual-decision-team}")
     private String webhookUrl;
 
     public ManualDecisionTeamWebhookStrategy(HmacSignatureService hmacSignatureService){
