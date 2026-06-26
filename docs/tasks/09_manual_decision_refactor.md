@@ -14,14 +14,15 @@
 - [x] **Métodos no PaymentService**: approveManualPayment e rejectManualPayment implementados
 - [x] **Strategy Pattern** para tratamento de status (PaymentStatusHandlerFactory)
 - [x] **DLQ configurada** para payflow.manual.decision.dlq
+- [x] **ManualReviewController removido do Core Service** (não existe mais)
+- [x] **ManualReviewService removido do Core Service** (não existe mais)
+- [x] **Webhook notifications** implementadas para aprovação/rejeição manual
 
 ### ❌ Pendente
-- [ ] Remover ManualReviewController do Core Service (se existir)
-- [ ] Remover ManualReviewService do Core Service (se existir)
 - [ ] Renomear ManualAnalyzeController para ManualReviewController no fraud-service
 - [ ] Implementar endpoint PUT /manual-analyze/user/{userId} no fraud-service
-- [ ] Adicionar status PENDING_REVIEW no enum Enum_Payment (se necessário)
-- [ ] Persistir Transaction após aprovação/rejeição manual
+- [ ] Verificar se status PENDING_REVIEW existe no enum Enum_Payment
+- [ ] Verificar se Transaction está sendo persistida corretamente após aprovação/rejeição manual
 
 ---
 
