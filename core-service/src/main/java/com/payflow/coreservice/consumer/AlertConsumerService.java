@@ -2,6 +2,7 @@ package com.payflow.coreservice.consumer;
 
 import com.payflow.commons.dto.alert.ManualReviewDecision;
 import com.payflow.commons.dto.alert.PaymentAlertEvent;
+import com.payflow.coreservice.services.WebhookService;
 import com.payflow.coreservice.strategy.handlers.alert.AlertHandler;
 import com.payflow.coreservice.strategy.handlers.alert.factory.AlertHandlerFactory;
 import org.slf4j.Logger;
@@ -14,9 +15,11 @@ public class AlertConsumerService {
 
     private static final Logger logger = LoggerFactory.getLogger(AlertConsumerService.class);
     private final AlertHandlerFactory alertHandlerFactory;
+    private final WebhookService webhookService;
 
-    public AlertConsumerService(AlertHandlerFactory alertHandlerFactory) {
+    public AlertConsumerService(AlertHandlerFactory alertHandlerFactory, WebhookService webhookService) {
         this.alertHandlerFactory = alertHandlerFactory;
+        this.webhookService = webhookService;
     }
 
     @KafkaListener(
@@ -29,6 +32,13 @@ public class AlertConsumerService {
         try{
             AlertHandler handler = alertHandlerFactory.getHandler(alert.getAlertType());
             handler.handle(alert);
+
+            if(alert.getAlertType().name().contains("SUSPICIOUS") ||
+            alert.getAlertType().name().contains("FRAUD")) {
+                webhookService.sendFraudTeamAlert(alert);
+            } else if (alert.getAlertType().name().contains("MANUAL")) {
+                webhookService.sendManualDecisionAlert(alert);
+            }
         } catch (Exception e) {
             logger.error("Erro ao processar alerta: {} | Pagamento: {} | Erro: {}",
                     alert.getAlertType(), alert.getPaymentId(), e.getMessage(), e);

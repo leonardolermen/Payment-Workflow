@@ -97,3 +97,13 @@ traceflow:
   capture-http-body: true
   redact-sensitive-fields: true
   enabled: true
+
+webhook:
+  hmac:
+    secret: ${WEBHOOK_HMAC_SECRET:h65t07tCISRgoq/H1Oh5a7gdY9u0JVUgzx4YvuvSLxUTKlawIgeF7irAo/CsWHsKJ5GKyVFSt3I5yC5uyxAqzg==}
+  url:
+    #Colocar os links pegos no webhook.site todas as vezes que fechar e for abrir para testar
+    #Vai colocar o link na frente dos dois pontos que estçao abaixo, exemplo: ${WEBHOOK_URL_FRAUD_TEAM:https://webhook.site/ e o resto do link
+    fraud-team: ${WEBHOOK_URL_FRAUD_TEAM:}
+    manual-decision-team: ${WEBHOOK_URL_MANUAL_DECISION_TEAM:}
+    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:}

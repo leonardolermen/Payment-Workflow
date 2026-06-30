@@ -10,6 +10,7 @@ import com.payflow.coreservice.model.factory.TransactionFactory;
 import com.payflow.coreservice.repository.PaymentRepository;
 import com.payflow.coreservice.repository.TransactionRepository;
 import com.payflow.coreservice.repository.UserRepository;
+import com.payflow.coreservice.services.WebhookService;
 import com.payflow.coreservice.strategy.PaymentStatusHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ApprovedHandler implements PaymentStatusHandler {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
+    private final WebhookService webhookService;
 
     @Override
     @Transactional
@@ -57,6 +59,16 @@ public class ApprovedHandler implements PaymentStatusHandler {
 
             Transaction transaction = TransactionFactory.fromPayment(payment, Enum_Transaction.SUCCESS, "Aprovado");
             transactionRepository.save(transaction);
+
+            if(response.getScore() != null && response.getScore() < 30){
+                webhookService.sendClientNotificationApproved(
+                        payment.getUuid(),
+                        payment.getPayerId(),
+                        payment.getPayeeId(),
+                        payment.getAmount(),
+                        response.getReason() != null ? response.getReason() : "Pagamento aprovado"
+                );
+            }
 
         } catch (Exception e) {
             payment.setStatus(Enum_Payment.FAILED);
