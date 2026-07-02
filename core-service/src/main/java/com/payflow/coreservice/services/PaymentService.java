@@ -212,6 +212,11 @@ public class PaymentService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
 
+        if(payment.getStatus() != Enum_Payment.PENDING_REVIEW){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING_REVIEW. Status atual: " + payment.getStatus());
+        }
+
         User payer = findUser(payment.getPayerId());
         if (payer.getBalance().compareTo(payment.getAmount()) < 0){
             paymentPersistenceHelper.updateStatusInNewTx(payment, Enum_Payment.FAILED);
@@ -244,6 +249,11 @@ public class PaymentService {
         Payment payment = paymentRepository.findByUuid(paymentId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Pagamento não encontrado"));
+
+        if (payment.getStatus() != Enum_Payment.PENDING_REVIEW){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Pagamento não está em PENDING_REVIEW. Status atual: " + payment.getStatus());
+        }
 
         payment.setStatus(Enum_Payment.REJECTED);
         paymentRepository.save(payment);
