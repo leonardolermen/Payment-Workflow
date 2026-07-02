@@ -106,4 +106,4 @@ webhook:
     #Vai colocar o link na frente dos dois pontos que estçao abaixo, exemplo: ${WEBHOOK_URL_FRAUD_TEAM:https://webhook.site/ e o resto do link
     fraud-team: ${WEBHOOK_URL_FRAUD_TEAM:}
     manual-decision-team: ${WEBHOOK_URL_MANUAL_DECISION_TEAM:}
-    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:}
+    client-notification: ${WEBHOOK_URL_CLIENT_NOTIFICATION:https://webhook.site/d45ed7c9-4829-4826-8d8c-94a7534e3439}

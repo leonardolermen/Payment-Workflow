@@ -70,7 +70,7 @@ public class FraudAnalysisService {
 
     private Status_Fraud determineStatus(double score) {
         if (score >= 70) return Status_Fraud.REJECTED;
-        if (score >= 30) return Status_Fraud.MANUAL_ANALYSIS;
+        if (score >= 30) return Status_Fraud.PENDING_REVIEW;
         return Status_Fraud.APPROVED;
     }
 

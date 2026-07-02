@@ -29,7 +29,7 @@ public class ManualAnalysisHandler implements PaymentStatusHandler {
     @Override
     @Transactional
     public void handle(Payment payment, FraudAnalysisResponse response) {
-        payment.setStatus(Enum_Payment.PENDING);
+        payment.setStatus(Enum_Payment.PENDING_REVIEW);
         paymentRepository.save(payment);
 
         PaymentAlertEvent alertEvent = PaymentAlertEventBuilder.fromAlertEvento(payment, response);

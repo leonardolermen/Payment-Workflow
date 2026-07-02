@@ -5,5 +5,6 @@ public enum Enum_Payment {
     PENDING,
     REJECTED,
     SUCCESS,
-    FAILED
+    FAILED,
+    PENDING_REVIEW
 }
